@@ -9,11 +9,14 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@posthog/nextjs-config": "^1.7.6",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.3",
     "ogl": "^1.0.11",
+    "posthog-js": "^1.331.0",
+    "posthog-node": "^5.21.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0"

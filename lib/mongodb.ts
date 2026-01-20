@@ -36,7 +36,6 @@ declare global {
  * In development, we store this on globalThis to persist across hot reloads.
  * This prevents creating multiple connections during development.
  */
-
 const cached: MongooseCache = globalThis.mongoose ?? {
     conn: null,
     promise: null,

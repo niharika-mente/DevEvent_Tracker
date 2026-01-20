@@ -1,0 +1,18 @@
+# CodeRabbit Configuration
+# Reference: https://docs.coderabbit.ai/configuration
+
+language: en
+reviews:
+  auto_review:
+    enabled: true
+    ignore_title_keywords:
+      - WIP
+      - DO NOT MERGE
+  path_filters:
+    - "!node_modules/**"
+    - "!.next/**"
+    - "!package-lock.json"
+  high_level_summary: true
+  poem: false
+chat:
+  auto_reply: true

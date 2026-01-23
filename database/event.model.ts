@@ -4,6 +4,7 @@ import mongoose, { Model, Schema, HydratedDocument } from "mongoose";
  * Interface representing the Event document fields.
  */
 export interface IEvent {
+    _id?: string;
     title: string;
     slug: string;
     description: string;
@@ -139,6 +140,7 @@ const EventSchema = new Schema<IEvent>(
             type: String,
             enum: ["online", "offline", "hybrid"],
             required: [true, "Mode is required"],
+            trim: true,
         },
         audience: {
             type: String,

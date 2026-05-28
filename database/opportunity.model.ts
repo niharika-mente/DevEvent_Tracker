@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema, HydratedDocument } from "mongoose";
-import crypto from "crypto";
+import crypto from "node:crypto";
 
 /**
  * Unified schema for all opportunity types: hackathons, internships, jobs.

@@ -9,7 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@posthog/nextjs-config": "^1.7.6",
+
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.9.0",
     "clsx": "^2.1.1",

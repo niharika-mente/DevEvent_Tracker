@@ -4,13 +4,7 @@ import mongoose, { Mongoose } from "mongoose";
  * MongoDB connection string from environment variables.
  * Ensure MONGODB_URI is set in your .env.local file.
  */
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-    throw new Error(
-        "Please define the MONGODB_URI environment variable inside .env.local"
-    );
-}
+const MONGODB_URI = process.env.MONGODB_URI || "";
 
 /**
  * Interface for the cached connection object.
@@ -51,6 +45,14 @@ globalThis.mongoose = cached;
  * @returns Promise<Mongoose> - The connected Mongoose instance.
  */
 async function connectToDatabase(): Promise<Mongoose> {
+    // Fail clearly if no URI is configured
+    if (!MONGODB_URI) {
+        throw new Error(
+            "MONGODB_URI is not set. Add it to your .env.local file.\n" +
+            "Get a free cluster at https://cloud.mongodb.com"
+        );
+    }
+
     // Return cached connection if available
     if (cached.conn) {
         return cached.conn;
@@ -59,10 +61,10 @@ async function connectToDatabase(): Promise<Mongoose> {
     // If no pending connection, create one
     if (!cached.promise) {
         const options = {
-            bufferCommands: false, // Disable command buffering for better error handling
+            bufferCommands: false,
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI!, options);
+        cached.promise = mongoose.connect(MONGODB_URI, options);
     }
 
     try {

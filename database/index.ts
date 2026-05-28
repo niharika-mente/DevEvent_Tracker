@@ -1,7 +1,4 @@
-/**
- * Database Models Index
- * Centralizes all Mongoose model exports for easy importing.
- */
+import Event, { IEvent } from "./event.model";
+import Opportunity, { IOpportunity, generateOpportunityHash } from "./opportunity.model";
 
-export { default as Event, type IEvent, type EventDocument } from "./event.model";
-export { default as Booking, type IBooking, type BookingDocument } from "./booking.model";
+export { Event, IEvent, Opportunity, IOpportunity, generateOpportunityHash };

@@ -5,3 +5,4 @@
 
 export { default as Event, type IEvent, type EventDocument } from "./event.model";
 export { default as Booking, type IBooking, type BookingDocument } from "./booking.model";
+export { default as User, type IUser, type UserDocument, type UserRole } from "./user.model";

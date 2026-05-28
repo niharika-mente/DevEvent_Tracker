@@ -251,6 +251,27 @@
     @apply bg-dark-100 text-light-100 text-xs rounded-[6px] px-5 py-2;
   }
 
+  .btn-ghost-dark {
+    @apply bg-dark-100/80 border border-dark-200 text-light-100 rounded-full px-5 py-2.5 font-medium transition-all hover:bg-dark-200/90 hover:border-light-200/20;
+  }
+
+  .btn-primary-cyan {
+    @apply bg-primary text-black rounded-full px-5 py-2.5 font-semibold transition-all hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(89,222,202,0.2)];
+  }
+
+  .btn-primary-amber {
+    @apply rounded-full px-5 py-2.5 font-semibold text-black transition-all hover:shadow-[0_0_30px_rgba(251,191,36,0.18)];
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  }
+
+  .btn-outline-cyan {
+    @apply rounded-full border border-cyan-400/30 bg-cyan-400/5 px-5 py-2.5 font-medium text-cyan-100 transition-all hover:border-cyan-300/50 hover:bg-cyan-400/10;
+  }
+
+  .btn-outline-amber {
+    @apply rounded-full border border-amber-400/30 bg-amber-400/5 px-5 py-2.5 font-medium text-amber-100 transition-all hover:border-amber-300/50 hover:bg-amber-400/10;
+  }
+
   #book-event {
     @apply flex flex-col gap-6;
 

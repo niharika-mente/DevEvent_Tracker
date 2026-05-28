@@ -18,7 +18,9 @@ export interface IEvent {
     audience: string;
     agenda: string[];
     organizer: string;
+    organizerId?: mongoose.Types.ObjectId | string;
     tags: string[];
+    attendees?: mongoose.Types.ObjectId[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -160,6 +162,17 @@ const EventSchema = new Schema<IEvent>(
             required: [true, "Organizer is required"],
             trim: true,
         },
+        organizerId: {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            index: true,
+        },
+        attendees: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: "User",
+            },
+        ],
         tags: {
             type: [String],
             required: [true, "Tags are required"],

@@ -1,28 +1,5 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-# DevEvent - Role-Based Event Management Platform
-
-A modern event management platform built with Next.js, featuring secure role-based authentication for Event Attenders and Event Organizers.
-
-## Table of Contents
-
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Authentication System](#authentication-system)
-- [Project Structure](#project-structure)
-- [Security Best Practices](#security-best-practices)
-- [Deployment](#deployment)
-
-## Features
-
-- **Role-Based Authentication**: Support for two user roles - Event Attenders and Event Organizers
-- **Secure Authentication**: Password hashing with bcryptjs and JWT-based session management
-- **User Dashboards**: Separate dashboards for organizers and attenders
-- **Event Management**: Organizers can create, edit, and manage events
-- **Event Discovery**: Attenders can browse and register for events
-- **Responsive UI**: Modern, accessible interface built with Tailwind CSS
-- **Environment-based Configuration**: All sensitive credentials managed via environment variables
-
 ## Getting Started
 
 ### Prerequisites
@@ -103,59 +80,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-## Authentication System
-
-### User Roles
-
-#### Event Attender
-- Browse all published events
-- Register for events
-- View event details
-- Access attender dashboard
-
-#### Event Organizer
-- Create new events
-- Edit and manage events
-- View attendee information
-- Access organizer dashboard
-
-### Authentication Flow
-
-1. **Sign Up**: Navigate to `/auth/signup` to create a new account (select role)
-2. **Login**: Navigate to `/auth/login` with your credentials
-3. **Logout**: Click "Logout" in the navbar to end your session
-
-### API Endpoints
-
-**Authentication**
-- `POST /api/auth/signup` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/logout` - Logout user
-- `GET /api/auth/me` - Get current user profile
-
-**Events**
-- `GET /api/events` - Get all events
-- `POST /api/events` - Create event (organizers only)
-- `GET /api/events/[slug]` - Get event details
-- `PATCH /api/events/[slug]` - Update event (event organizer only)
-- `DELETE /api/events/[slug]` - Delete event (event organizer only)
-- `GET /api/events/[slug]/attendees` - View attendees (event organizer only)
-- `POST /api/events/[slug]/attendees` - Join event (attender only)
-- `DELETE /api/events/[slug]/attendees` - Leave event (attender only)
-
-## Project Structure
-
-```
-app/auth/                    # Authentication pages
-app/api/auth/               # Auth API routes
-app/organizer/dashboard/    # Organizer dashboard
-app/attender/dashboard/     # Attender dashboard
-components/                 # Reusable components
-database/                   # MongoDB schemas
-lib/auth.ts                 # JWT utilities
-lib/hooks/useAuth.ts        # Authentication hook
-```
-
+git add README.md
 ## Security Best Practices
 
 1. **Environment Variables**: Store all secrets in `.env.local` (never commit)

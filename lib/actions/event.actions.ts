@@ -2,6 +2,7 @@
 
 import connectToDatabase from "@/lib/mongodb";
 import { Event, IEvent } from "@/database";
+import { FALLBACK_EVENTS } from "@/lib/fallback-data";
 
 export async function getSimilarEventsBySlug(slug: string): Promise<IEvent[]> {
     try {
@@ -48,13 +49,17 @@ export async function getEventBySlug(slug: string) {
 
 export async function getAllEvents() {
     try {
-        await connectToDatabase();
+        const db = await connectToDatabase();
+
+        if (!db) {
+            return { success: true, events: FALLBACK_EVENTS };
+        }
 
         const events = await Event.find({}).sort({ createdAt: -1 }).lean();
 
         return { success: true, events: JSON.parse(JSON.stringify(events)) };
     } catch (error) {
         console.error('Error fetching events:', error);
-        return { success: false, error: 'Failed to fetch events' };
+        return { success: true, events: FALLBACK_EVENTS, error: 'Falling back to demo events' };
     }
 }

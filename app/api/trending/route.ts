@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Opportunity from "@/database/opportunity.model";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 
 /** GET /api/trending — top trending opportunities */
 export async function GET() {
   try {
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) {
+      return NextResponse.json({ opportunities: FALLBACK_OPPORTUNITIES.filter((opp) => opp.isTrending).slice(0, 8) });
+    }
+
     const opportunities = await Opportunity.find({ isTrending: true, isExpired: false })
       .sort({ views: -1 }).limit(8).lean();
     return NextResponse.json({ opportunities });

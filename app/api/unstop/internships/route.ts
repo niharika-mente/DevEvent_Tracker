@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 
 /** GET /api/unstop/internships?page=1&q=search */
 export async function GET(request: Request) {
@@ -48,7 +49,27 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ internships, total: json?.data?.total || internships.length });
   } catch (err) {
-    console.error("[Unstop internships]", err);
-    return NextResponse.json({ internships: [], error: "Failed to fetch from Unstop" }, { status: 500 });
+    console.warn("[Unstop internships] falling back to local demo data:", err);
+    const internships = FALLBACK_OPPORTUNITIES.filter((opp) => opp.type === "internship")
+      .slice(0, 12)
+      .map((opp) => ({
+        _id: String(opp._id),
+        title: opp.title,
+        image: opp.logo || "/images/event2.png",
+        orgLogo: opp.logo || "",
+        location: opp.location,
+        startDate: new Date(opp.postedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        endDate: new Date(opp.deadline || Date.now()).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        stipend: opp.stipend,
+        mode: opp.isRemote ? "remote" : "onsite",
+        organization: opp.company,
+        tags: opp.tags.slice(0, 3),
+        registrationLink: opp.applyLink,
+        daysLeft: Math.max(0, Math.ceil((new Date(opp.deadline || Date.now()).getTime() - Date.now()) / 86_400_000)),
+        registeredCount: opp.registerCount || 0,
+        open: !opp.isExpired,
+      }));
+
+    return NextResponse.json({ internships, total: internships.length });
   }
 }

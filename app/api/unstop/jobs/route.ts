@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 
 /** GET /api/unstop/jobs?page=1&q=search */
 export async function GET(request: Request) {
@@ -48,7 +49,26 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ jobs, total: json?.data?.total || jobs.length });
   } catch (err) {
-    console.error("[Unstop jobs]", err);
-    return NextResponse.json({ jobs: [], error: "Failed to fetch from Unstop" }, { status: 500 });
+    console.warn("[Unstop jobs] falling back to local demo data:", err);
+    const jobs = FALLBACK_OPPORTUNITIES.filter((opp) => opp.type === "job")
+      .slice(0, 12)
+      .map((opp) => ({
+        _id: String(opp._id),
+        title: opp.title,
+        image: opp.logo || "/images/event3.png",
+        orgLogo: opp.logo || "",
+        location: opp.location,
+        postedAt: new Date(opp.postedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        salary: opp.stipend,
+        mode: opp.isRemote ? "remote" : "onsite",
+        company: opp.company,
+        tags: opp.tags.slice(0, 3),
+        registrationLink: opp.applyLink,
+        daysLeft: Math.max(0, Math.ceil((new Date(opp.deadline || Date.now()).getTime() - Date.now()) / 86_400_000)),
+        applyCount: opp.registerCount || 0,
+        open: !opp.isExpired,
+      }));
+
+    return NextResponse.json({ jobs, total: jobs.length });
   }
 }

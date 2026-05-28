@@ -2,6 +2,7 @@
 
 import connectToDatabase from "@/lib/mongodb";
 import Opportunity, { IOpportunity } from "@/database/opportunity.model";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 import { FilterQuery } from "mongoose";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -23,7 +24,29 @@ export interface OpportunityFilters {
 
 export async function getOpportunities(filters: OpportunityFilters = {}) {
   try {
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) {
+      const filtered = FALLBACK_OPPORTUNITIES.filter((opp) => {
+        const matchesType = !filters.type || opp.type === filters.type;
+        const matchesSearch = !filters.search || [opp.title, opp.company, opp.description, ...(opp.skills || []), ...(opp.tags || [])].join(" ").toLowerCase().includes(filters.search.toLowerCase());
+        const matchesLocation = !filters.location || opp.location.toLowerCase().includes(filters.location.toLowerCase());
+        const matchesRemote = filters.remote === undefined || opp.isRemote === filters.remote;
+        const matchesSource = !filters.source || opp.source === filters.source;
+        const matchesCompany = !filters.company || opp.company.toLowerCase().includes(filters.company.toLowerCase());
+        return matchesType && matchesSearch && matchesLocation && matchesRemote && matchesSource && matchesCompany;
+      });
+
+      const page = filters.page ?? 1;
+      const limit = filters.limit ?? 12;
+      const start = (page - 1) * limit;
+      return {
+        success: true,
+        opportunities: filtered.slice(start, start + limit),
+        total: filtered.length,
+        page,
+        totalPages: Math.ceil(filtered.length / limit) || 1,
+      };
+    }
 
     const {
       type,
@@ -114,7 +137,10 @@ export async function getOpportunityById(id: string) {
 
 export async function getTrending(limit = 8) {
   try {
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) {
+      return { success: true, opportunities: FALLBACK_OPPORTUNITIES.filter((opp) => opp.isTrending).slice(0, limit) };
+    }
     const opportunities = await Opportunity.find({ isTrending: true, isExpired: false })
       .sort({ views: -1 })
       .limit(limit)
@@ -131,7 +157,10 @@ export async function getTrending(limit = 8) {
 
 export async function getFeatured(limit = 6) {
   try {
-    await connectToDatabase();
+    const db = await connectToDatabase();
+    if (!db) {
+      return { success: true, opportunities: FALLBACK_OPPORTUNITIES.filter((opp) => opp.isFeatured).slice(0, limit) };
+    }
     const opportunities = await Opportunity.find({
       isFeatured: true,
       isExpired: false,

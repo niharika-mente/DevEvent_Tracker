@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { fetchUnstopCategory } from "@/lib/services/sources/unstop";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 
 /** GET /api/unstop/hackathons?page=1&q=search */
 export async function GET(request: Request) {
@@ -48,7 +48,27 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ hackathons, total: json?.data?.total || hackathons.length });
   } catch (err) {
-    console.error("[Unstop hackathons]", err);
-    return NextResponse.json({ hackathons: [], error: "Failed to fetch from Unstop" }, { status: 500 });
+    console.warn("[Unstop hackathons] falling back to local demo data:", err);
+    const hackathons = FALLBACK_OPPORTUNITIES.filter((opp) => opp.type === "hackathon")
+      .slice(0, 12)
+      .map((opp) => ({
+        _id: String(opp._id),
+        title: opp.title,
+        image: opp.logo || "/images/event1.png",
+        orgLogo: opp.logo || "",
+        location: opp.location,
+        startDate: new Date(opp.postedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        endDate: new Date(opp.deadline || Date.now()).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }),
+        prizePool: opp.stipend || "Certificates + Prizes",
+        mode: opp.isRemote ? "online" : "offline",
+        organizer: opp.company,
+        tags: opp.tags.slice(0, 3),
+        registrationLink: opp.applyLink,
+        daysLeft: Math.max(0, Math.ceil((new Date(opp.deadline || Date.now()).getTime() - Date.now()) / 86_400_000)),
+        registerCount: opp.registerCount || 0,
+        regnOpen: !opp.isExpired,
+      }));
+
+    return NextResponse.json({ hackathons, total: hackathons.length });
   }
 }

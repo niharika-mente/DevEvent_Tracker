@@ -44,13 +44,10 @@ globalThis.mongoose = cached;
  *
  * @returns Promise<Mongoose> - The connected Mongoose instance.
  */
-async function connectToDatabase(): Promise<Mongoose> {
-    // Fail clearly if no URI is configured
+async function connectToDatabase(): Promise<Mongoose | null> {
     if (!MONGODB_URI) {
-        throw new Error(
-            "MONGODB_URI is not set. Add it to your .env.local file.\n" +
-            "Get a free cluster at https://cloud.mongodb.com"
-        );
+        console.warn("MONGODB_URI is not set. Falling back to demo data.");
+        return null;
     }
 
     // Return cached connection if available

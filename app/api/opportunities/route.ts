@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Opportunity from "@/database/opportunity.model";
+import { FALLBACK_OPPORTUNITIES } from "@/lib/fallback-data";
 import { FilterQuery } from "mongoose";
 
 /**
@@ -9,8 +10,37 @@ import { FilterQuery } from "mongoose";
  */
 export async function GET(request: Request) {
   try {
-    await connectToDatabase();
+    const db = await connectToDatabase();
     const { searchParams } = new URL(request.url);
+
+    if (!db) {
+      const type = searchParams.get("type") as "hackathon" | "internship" | "job" | null;
+      const search = searchParams.get("search") || "";
+      const location = searchParams.get("location") || "";
+      const remote = searchParams.get("remote") === "true";
+      const skills = searchParams.get("skills") || "";
+      const company = searchParams.get("company") || "";
+      const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+      const limit = Math.min(50, parseInt(searchParams.get("limit") || "12"));
+
+      const filtered = FALLBACK_OPPORTUNITIES.filter((opp) => {
+        const matchesType = !type || opp.type === type;
+        const matchesSearch = !search || [opp.title, opp.company, opp.description, ...opp.skills, ...opp.tags].join(" ").toLowerCase().includes(search.toLowerCase());
+        const matchesLocation = !location || opp.location.toLowerCase().includes(location.toLowerCase());
+        const matchesRemote = !remote || opp.isRemote === true;
+        const matchesSkills = !skills || skills.split(",").map((s) => s.trim()).every((skill) => opp.skills.includes(skill));
+        const matchesCompany = !company || opp.company.toLowerCase().includes(company.toLowerCase());
+        return matchesType && matchesSearch && matchesLocation && matchesRemote && matchesSkills && matchesCompany;
+      });
+
+      const start = (page - 1) * limit;
+      return NextResponse.json({
+        opportunities: filtered.slice(start, start + limit),
+        total: filtered.length,
+        page,
+        totalPages: Math.ceil(filtered.length / limit) || 1,
+      });
+    }
 
     const type = searchParams.get("type") as "hackathon" | "internship" | "job" | null;
     const search = searchParams.get("search") || "";

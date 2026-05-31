@@ -147,6 +147,28 @@
     }
   }
 
+  /* Interactive tweaks */
+  #explore-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  header nav button {
+    @apply text-light-100 bg-transparent;
+  }
+
+  header nav ul li a {
+    @apply transition-colors hover:text-primary;
+  }
+
+  /* Footer styles */
+  footer {
+    @apply text-light-200;
+  }
+
+  .logo-footer img {
+    @apply rounded-full;
+  }
+
   header {
     @apply glass sticky top-0 z-50;
 

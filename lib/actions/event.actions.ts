@@ -46,15 +46,34 @@ export async function getEventBySlug(slug: string) {
     }
 }
 
-export async function getAllEvents() {
-    try {
-        await connectToDatabase();
+export async function getAllEvents(filters?: { query?: string; mode?: string; tag?: string }) {
+  try {
+    const queryCondition: any = {};
 
-        const events = await Event.find({}).sort({ createdAt: -1 }).lean();
-
-        return { success: true, events: JSON.parse(JSON.stringify(events)) };
-    } catch (error) {
-        console.error('Error fetching events:', error);
-        return { success: false, error: 'Failed to fetch events' };
+    // 1. Regex search for Title, Description, or Tags
+    if (filters?.query) {
+      queryCondition.$or = [
+        { title: { $regex: filters.query, $options: 'i' } },
+        { description: { $regex: filters.query, $options: 'i' } },
+        { tags: { $regex: filters.query, $options: 'i' } }
+      ];
     }
+
+    // 2. Filter by Mode (Online, Offline, Hybrid)
+    if (filters?.mode && filters.mode !== 'All') {
+      queryCondition.mode = { $regex: new RegExp(`^${filters.mode}$`, 'i') };
+    }
+
+    // 3. Filter by Tag
+    if (filters?.tag && filters.tag !== 'All') {
+      queryCondition.tags = { $regex: new RegExp(`^${filters.tag}$`, 'i') };
+    }
+
+    // Replace 'Event' with the actual Mongoose model name used in your file
+    const events = await Event.find(queryCondition).sort({ createdAt: -1 });
+    return JSON.parse(JSON.stringify(events));
+  } catch (error) {
+    console.error("Failed to fetch filtered events:", error);
+    return [];
+  }
 }

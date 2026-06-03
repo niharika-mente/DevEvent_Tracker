@@ -33,7 +33,6 @@ const EventCard = ({
         hover:border-cyan-400/30
         hover:bg-white/2
         hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
-        group-hover:brightness-110
       "
     >
       <div className="overflow-hidden">

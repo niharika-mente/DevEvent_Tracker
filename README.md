@@ -85,3 +85,29 @@ We have set up templates to help you raise clean and structured Issues and Pull 
 - **Pull Request Template**: Ensure your code meets style guides, lists issue references, and describes verification tests.
 
 *Let's build the community space for developers together.*
+
+---
+
+## Contributors
+
+Thanks to all the amazing people who contribute to **DevEvent_Tracker** 🚀
+
+<p align="center">
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=niharika-mente/DevEvent_Tracker" alt="Contributors"/>
+  </a>
+</p>
+
+---
+
+## Project Support
+
+<p align="center">
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/stargazers">
+    <img src="https://img.shields.io/github/stars/niharika-mente/DevEvent_Tracker?style=social" alt="Stars">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/network/members">
+    <img src="https://img.shields.io/github/forks/niharika-mente/DevEvent_Tracker?style=social" alt="Forks">
+  </a>
+</p>

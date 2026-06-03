@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { createEvent } from "@/lib/actions/create-event.actions";
 
 const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -53,16 +54,31 @@ const CreateEventForm = () => {
     resolver: zodResolver(eventSchema),
   });
 
-  const onSubmit = async (_data: EventFormData) => {
-    try {
+  const onSubmit = async (data: EventFormData) => {
+  try {
+
+    const result = await createEvent(data);
+
+    if (result.success) {
 
       toast.success("Event created successfully!");
 
       reset();
-    } catch (error) {
-      toast.error("Something went wrong");
+
+    } else {
+
+      toast.error(result.error || "Failed to create event");
+
     }
-  };
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast.error("Something went wrong");
+
+  }
+};
 const inputStyles = `
   w-full p-3 rounded-xl
   bg-black/30

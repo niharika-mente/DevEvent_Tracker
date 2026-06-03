@@ -7,8 +7,14 @@ import { IEvent } from "@/database";
 import { getAllEvents } from "@/lib/actions/event.actions";
 
 
-
-const Page = async () => {
+interface PageProps {
+  searchParams: Promise<{
+    query?: string;
+    mode?: string;
+    tag?: string;
+  }>;
+}
+const Page = async ({ searchParams }: PageProps) => {
   
   
 

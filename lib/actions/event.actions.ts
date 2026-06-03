@@ -1,5 +1,5 @@
-import { connectToDatabase } from "@/lib/db"; 
-import Event from "@/lib/models/event.model"; 
+import connectToDatabase from "@/lib/mongodb";
+import { Event } from "@/database";
 
 const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
@@ -34,4 +34,22 @@ export async function getAllEvents(filters?: { query?: string; mode?: string; ta
     console.error('Error fetching events:', error);
     return []; 
   }
+}
+
+export async function getSimilarEventsBySlug(
+  slug: string,
+  tags: string[] = []
+) {
+  await connectToDatabase();
+
+  if (!tags.length) {
+    return [];
+  }
+
+  const events = await Event.find({
+    slug: { $ne: slug },
+    tags: { $in: tags }
+  }).limit(3);
+
+  return JSON.parse(JSON.stringify(events));
 }

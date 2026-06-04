@@ -2,10 +2,9 @@ import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
 import SearchFilters from "@/components/SearchFilters";
 import Footer from "@/components/Footer";
+import RecommendedFeed from "@/components/RecommendedFeed";
 import { IEvent } from "@/database";
-
-import { getAllEvents } from "@/lib/actions/event.actions";
-
+import { getAllEvents, getRecommendedEvents } from "@/lib/actions/event.actions";
 
 interface PageProps {
   searchParams: Promise<{
@@ -14,26 +13,32 @@ interface PageProps {
     tag?: string;
   }>;
 }
-const Page = async ({ searchParams }: PageProps) => {
-  
-  
 
+export default async function Page({ searchParams }: PageProps) {
+  // 1. Fetch general events
   const events = await getAllEvents();
 
+  // 2. Target tags for recommendation
+  const userInterestedTags = ["Next.js", "React", "Frontend", "Hackathon"];
+
+  // 3. Fetch matching recommendations from the backend action
+  const recommendedEvents = await getRecommendedEvents(userInterestedTags);
+
+  // Filters for individual categories
   const hackathons = events.filter(
-  (event) => event.tags?.includes("Hackathon")
-);
+    (event: any) => event.tags?.includes("Hackathon")
+  );
 
   const seminars = events.filter(
-    (event) => event.tags?.includes("Seminar")
+    (event: any) => event.tags?.includes("Seminar")
   );
 
   const internships = events.filter(
-    (event) => event.tags?.includes("Internship")
+    (event: any) => event.tags?.includes("Internship")
   );
 
   const jobs = events.filter(
-    (event) => event.tags?.includes("Job")
+    (event: any) => event.tags?.includes("Job")
   );
 
   return (
@@ -48,6 +53,9 @@ const Page = async ({ searchParams }: PageProps) => {
 
       <ExploreBtn />
 
+      {/* Live Production Recommendation Feed Banner */}
+      <RecommendedFeed events={recommendedEvents} userTags={userInterestedTags} />
+
       <div className="mt-10">
         <SearchFilters />
       </div>
@@ -59,11 +67,11 @@ const Page = async ({ searchParams }: PageProps) => {
           <section>
             <h3 className="mb-6">🔥 Hackathons</h3>
             <ul className="events">
-              {hackathons.map((event) => (
-  <li key={event._id} className="list-none">
-    <EventCard {...(event as IEvent)} />
-  </li>
-))}
+              {hackathons.map((event: any) => (
+                <li key={event._id} className="list-none">
+                  <EventCard {...(event as IEvent)} />
+                </li>
+              ))}
             </ul>
           </section>
 
@@ -71,11 +79,11 @@ const Page = async ({ searchParams }: PageProps) => {
           <section>
             <h3 className="mb-6">📚 Seminars</h3>
             <ul className="events">
-              {seminars.map((event) => (
-  <li key={event._id} className="list-none">
-    <EventCard {...(event as IEvent)} />
-  </li>
-))}
+              {seminars.map((event: any) => (
+                <li key={event._id} className="list-none">
+                  <EventCard {...(event as IEvent)} />
+                </li>
+              ))}
             </ul>
           </section>
 
@@ -83,11 +91,11 @@ const Page = async ({ searchParams }: PageProps) => {
           <section>
             <h3 className="mb-6">💼 Internships</h3>
             <ul className="events">
-              {internships.map((event) => (
-  <li key={event._id} className="list-none">
-    <EventCard {...(event as IEvent)} />
-  </li>
-))}
+              {internships.map((event: any) => (
+                <li key={event._id} className="list-none">
+                  <EventCard {...(event as IEvent)} />
+                </li>
+              ))}
             </ul>
           </section>
 
@@ -95,11 +103,11 @@ const Page = async ({ searchParams }: PageProps) => {
           <section>
             <h3 className="mb-6">🚀 Jobs</h3>
             <ul className="events">
-              {jobs.map((event) => (
-  <li key={event._id} className="list-none">
-    <EventCard {...(event as IEvent)} />
-  </li>
-))}
+              {jobs.map((event: any) => (
+                <li key={event._id} className="list-none">
+                  <EventCard {...(event as IEvent)} />
+                </li>
+              ))}
             </ul>
           </section>
 
@@ -120,6 +128,4 @@ const Page = async ({ searchParams }: PageProps) => {
       <Footer />
     </section>
   );
-};
-
-export default Page;
+}

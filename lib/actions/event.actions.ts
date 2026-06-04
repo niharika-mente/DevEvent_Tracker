@@ -53,3 +53,27 @@ export async function getSimilarEventsBySlug(
 
   return JSON.parse(JSON.stringify(events));
 }
+
+// Add this at the very bottom of your lib/actions/event.action.ts file
+
+export async function getRecommendedEvents(userTags: string[] = []) {
+  try {
+    await connectToDatabase();
+
+    if (!userTags.length) {
+      return [];
+    }
+
+    // Find up to 3 events that match the user's interested tags, sorted by newest
+    const recommendedEvents = await Event.find({
+      tags: { $in: userTags }
+    })
+    .sort({ createdAt: -1 })
+    .limit(3);
+
+    return JSON.parse(JSON.stringify(recommendedEvents));
+  } catch (error) {
+    console.error('Error fetching recommended events:', error);
+    return [];
+  }
+}

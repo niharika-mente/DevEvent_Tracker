@@ -19,22 +19,22 @@ const EventCard = ({
   slug,
 }: Props) => {
   return (
-    <Link
-      href={`/events/${slug}`}
-      id="event-card"
-      className="
-        group
-        cursor-pointer
-        rounded-2xl
-        overflow-hidden
-        border border-cyan-500/10
-        transition-all duration-300 ease-out
-        hover:-translate-y-2
-        hover:border-cyan-400/30
-        hover:bg-white/2
-        hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
-      "
-    >
+<Link
+  href={`/events/${slug}`}
+  className="
+    event-card
+    group
+    cursor-pointer
+    rounded-2xl
+    overflow-hidden
+    border border-cyan-500/10
+    transition-all duration-300 ease-out
+    hover:-translate-y-2
+    hover:border-cyan-400/30
+    hover:bg-white/2
+    hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
+  "
+>
       <div className="overflow-hidden">
         <Image
           src={image}

@@ -11,7 +11,15 @@ export default function SearchFilters() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [search, setSearch] = useState(searchParams.get('query') || '');
+  const [search, setSearch] = useState('');
+  const [mode, setMode] = useState('All');
+  const [tag, setTag] = useState('All');
+
+  useEffect(() => {
+    setSearch(searchParams.get('query') || '');
+    setMode(searchParams.get('mode') || 'All');
+    setTag(searchParams.get('tag') || 'All');
+  }, [searchParams]);
 
   const handleFilterChange = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -43,32 +51,35 @@ export default function SearchFilters() {
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-500">Mode:</span>
           <select
-            value={searchParams.get('mode') || 'All'}
-            onChange={(e) => handleFilterChange('mode', e.target.value)}
+            value={mode}
+            onChange={(e) => {
+              setMode(e.target.value);
+              handleFilterChange('mode', e.target.value);
+            }}
             className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white dark:bg-gray-900 text-sm focus:outline-none"
           >
-            {MODES.map((mode) => (
-              <option key={mode} value={mode}>{mode}</option>
+            {MODES.map((m) => (
+              <option key={m} value={m}>{m}</option>
             ))}
           </select>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto max-w-full">
           <span className="text-sm font-medium text-gray-500 shrink-0">Tags:</span>
           <div className="flex gap-1.5">
-            {POPULAR_TAGS.map((tag) => {
-              const isActive = (searchParams.get('tag') || 'All') === tag;
-              return (
-                <button
-                  key={tag}
-                  onClick={() => handleFilterChange('tag', tag)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full border transition ${
-                    isActive ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
-                  }`}
-                >
-                  {tag}
-                </button>
-              );
-            })}
+            {POPULAR_TAGS.map((t) => (
+              <button
+                key={t}
+                onClick={() => {
+                  setTag(t);
+                  handleFilterChange('tag', t);
+                }}
+                className={`px-3 py-1 text-xs font-medium rounded-full border transition ${
+                  tag === t ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
+                }`}
+              >
+                {t}
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import LightRays from "../components/LightRays";
 import Navbar from "../components/Navbar";
 import { PostHogProvider } from "./providers";
 import { Toaster } from "sonner";
+import { Suspense } from "react";
 
 const SchibstedGrotesk = Schibsted_Grotesk({
   variable: "--font-schibsted-grotesk",
@@ -33,7 +34,9 @@ export default function RootLayout({
       >
         <Toaster richColors position="top-right" />
         <PostHogProvider>
-          <Navbar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           <div className="absolute inset-0 top-0 z-[-1] min-h-screen pointer-events-none">
             <LightRays
               raysOrigin="top-center-offset"
@@ -52,7 +55,9 @@ export default function RootLayout({
             />
           </div>
           <main>
-            {children}
+            <Suspense fallback={null}>
+              {children}
+            </Suspense>
           </main>
         </PostHogProvider>
       </body>

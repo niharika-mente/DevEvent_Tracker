@@ -12,8 +12,7 @@ type CreateEventInput = {
   date: string;
   time: string;
   location: string;
-  mode: string;
-  eventType: string;     
+  mode: string;   
   type: string;
   targetAudience: string;
   agenda: string;
@@ -37,8 +36,7 @@ export async function createEvent(data: CreateEventInput)  {
       date: data.date,
       time: data.time,
       mode: data.mode,
-      type: data.eventType,   
-      type: data.type,
+      type: data.type,   
 
       audience: data.targetAudience,
      
@@ -62,11 +60,11 @@ export async function createEvent(data: CreateEventInput)  {
       event: JSON.parse(JSON.stringify(event)),
     };
   } catch (error) {
-  console.error("Create Event Error:", error);
+    console.error("Create Event Error:", error);
 
-  return {
-    success: false,
-    error: "Failed to create event",
-  };
-}
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to create event",
+    };
+  }
 }

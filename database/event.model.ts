@@ -61,8 +61,8 @@ function normalizeDate(dateStr: string): string {
 function normalizeTime(timeStr: string): string {
     const trimmed = timeStr.trim().toUpperCase();
 
-    // Try to parse 12-hour format (e.g., "2:30 PM")
-    const twelveHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/);
+    // Try to parse 12-hour format (e.g., "2:30 PM", "2:30:00 PM")
+    const twelveHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/);
     if (twelveHourMatch) {
         let hours = parseInt(twelveHourMatch[1], 10);
         const minutes = twelveHourMatch[2];
@@ -74,8 +74,8 @@ function normalizeTime(timeStr: string): string {
         return `${hours.toString().padStart(2, "0")}:${minutes}`;
     }
 
-    // Try to parse 24-hour format (e.g., "14:30")
-    const twentyFourHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})$/);
+    // Try to parse 24-hour format (e.g., "14:30", "14:30:00")
+    const twentyFourHourMatch = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
     if (twentyFourHourMatch) {
         const hours = parseInt(twentyFourHourMatch[1], 10);
         const minutes = twentyFourHourMatch[2];

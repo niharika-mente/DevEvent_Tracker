@@ -5,6 +5,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createEvent } from "@/lib/actions/create-event.actions";
+import { useRouter } from "next/navigation";
 
 const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -46,6 +47,7 @@ const eventSchema = z.object({
 type EventFormData = z.infer<typeof eventSchema>;
 
 const CreateEventForm = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -54,32 +56,24 @@ const CreateEventForm = () => {
   } = useForm<EventFormData>({
     resolver: zodResolver(eventSchema),
   });
+  console.log("Create Event function called");
 
   const onSubmit = async (data: EventFormData) => {
-  try {
+    try {
+      const result = await createEvent(data);
 
-    const result = await createEvent(data);
-
-    if (result.success) {
-
-      toast.success("Event created successfully!");
-
-      reset();
-
-    } else {
-
-      toast.error(result.error || "Failed to create event");
-
+      if (result.success && result.event?.slug) {
+        toast.success("Event created successfully!");
+        reset();
+        router.push(`/events/${result.event.slug}`);
+      } else {
+        toast.error(result.error || "Failed to create event");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Something went wrong");
     }
-
-  } catch (error) {
-
-    console.error(error);
-
-    toast.error("Something went wrong");
-
-  }
-};
+  };
 const inputStyles = `
   w-full p-3 rounded-xl
   bg-black/30
@@ -230,7 +224,7 @@ const buttonStyles = `
               {...register("time")}
               className={inputStyles}/>
 
-        <p className="text-sm text-gray-500/80 mt-2">Use your local time format (e.g. 01:30 PM)</p>
+        <p className="text-sm text-gray-500/80 mt-2">Use your local time format (18:30) in Railway time</p>
             {errors.time && (
               <p className="text-red-400 text-sm mt-2">
                 {errors.time.message}
@@ -302,11 +296,9 @@ const buttonStyles = `
   )}
 </div>
 </div>
+</div>
       {/* AUDIENCE & AGENDA */}
       <div className={sectionStyles}>
-      {/* Closing div for Audience & Agenda */}
-      </div>
-      {/* Closing div for Audience & Agenda */}
         <h2 className="text-2xl font-bold">Audience & Agenda</h2>
 
         <div>
@@ -342,7 +334,7 @@ const buttonStyles = `
             </p>
           )}
         </div>
-      </div> {/* Closing div for Organizer */}
+      </div>
 
       {/* ORGANIZER */}
       <div className={sectionStyles}>

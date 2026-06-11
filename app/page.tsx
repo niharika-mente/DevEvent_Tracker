@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
 import SearchFilters from "@/components/SearchFilters";
@@ -57,7 +58,9 @@ export default async function Page({ searchParams }: PageProps) {
       <RecommendedFeed events={recommendedEvents} userTags={userInterestedTags} />
 
       <div className="mt-10">
-        <SearchFilters />
+        <Suspense fallback={null}>
+          <SearchFilters />
+        </Suspense>
       </div>
 
       {events && events.length > 0 ? (

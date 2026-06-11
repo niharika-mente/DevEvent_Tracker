@@ -12,9 +12,10 @@ interface CreateBookingParams {
 export async function createBooking({ eventId, slug, email }: CreateBookingParams) {
     try {
         await connectToDatabase();
+        const cleanEmail = email.toLowerCase().trim();
 
         // Check if booking already exists
-        const existingBooking = await Booking.findOne({ eventId, email });
+        const existingBooking = await Booking.findOne({ eventId, email: cleanEmail });
 
         if (existingBooking) {
             return { success: false, error: 'You have already booked this event' };
@@ -23,7 +24,7 @@ export async function createBooking({ eventId, slug, email }: CreateBookingParam
         // Create new booking
         const booking = await Booking.create({
             eventId,
-            email,
+            email: cleanEmail,
         });
 
         return { success: true, booking: JSON.parse(JSON.stringify(booking)) };

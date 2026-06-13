@@ -288,7 +288,7 @@ type(scope): short description
 - Description must be **lowercase**
 - Description must be **72 characters or less**
 - No period at the end
-- Use **imperative mood**: "add" not "added" or "adds"
+- Prefer imperative mood: use "add" rather than "added" or "adds" (not enforced by commitlint)
 - Scope must be **kebab-case** if provided
 
 ## Good Commits

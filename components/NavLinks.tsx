@@ -48,6 +48,16 @@ export default function NavLinks() {
           Create Event
         </Link>
       </li>
+
+      <li>
+        <Link
+          href="/my-bookings"
+          aria-current={pathname === "/my-bookings" ? "page" : undefined}
+          className={navLinkClass("/my-bookings")}
+        >
+          My Bookings
+        </Link>
+      </li>
     </ul>
   );
 }

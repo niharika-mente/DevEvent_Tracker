@@ -255,24 +255,106 @@ refactor/event-card-component
 
 # Commit Message Guidelines
 
-Use Conventional Commits:
+This project enforces **Conventional Commits** via [commitlint](https://commitlint.js.org/) + [Husky](https://typicode.github.io/husky/). Invalid commit messages are **rejected automatically**.
+
+## Format
 
 ```text
 type(scope): short description
+
+[optional body]
+
+[optional footer]
 ```
 
-Examples:
+## Allowed Types
+
+| Type | Use for |
+|------|---------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `docs` | Documentation only |
+| `style` | Formatting, whitespace |
+| `refactor` | Code change, no feature/fix |
+| `perf` | Performance improvement |
+| `test` | Adding or fixing tests |
+| `build` | Build system, dependencies |
+| `ci` | CI/CD config changes |
+| `chore` | Maintenance tasks |
+| `revert` | Revert a previous commit |
+
+## Rules
+
+- Description must be **lowercase**
+- Description must be **72 characters or less**
+- No period at the end
+- Use **imperative mood**: "add" not "added" or "adds"
+- Scope must be **kebab-case** if provided
+
+## Good Commits
 
 ```text
 feat(events): add category filtering
-
-feat(ui): implement dark mode
-
-fix(navbar): resolve mobile menu issue
-
+```
+```text
+fix(navbar): resolve mobile menu overflow on small screens
+```
+```text
 docs(readme): improve setup instructions
+```
+```text
+refactor(cards): simplify event card rendering logic
+```
+```text
+feat(auth)!: replace session tokens with JWT
 
-refactor(cards): simplify event card rendering
+BREAKING CHANGE: clients must update Authorization header format.
+```
+```text
+fix(booking): prevent duplicate submissions
+
+Debounce was missing on the submit handler, causing multiple
+API calls on rapid clicks.
+
+Fixes #102
+```
+
+## Bad Commits
+
+```text
+# No type prefix
+updated navbar
+```
+```text
+# Vague description
+fix: fixed it
+```
+```text
+# Wrong tense (use imperative mood)
+feat: added dark mode
+```
+```text
+# Description starts with uppercase
+fix: Resolve login bug
+```
+```text
+# Description too long (over 72 chars)
+feat: add a new feature that allows users to export their data in multiple formats including CSV and JSON
+```
+```text
+# Invalid type
+update(ui): change button color
+```
+
+## Breaking Changes
+
+Use `!` after type/scope, and add a `BREAKING CHANGE` footer:
+
+```text
+feat(api)!: change event response format
+
+BREAKING CHANGE: Response now includes a nested `meta` object.
+Update all clients reading the flat structure.
 ```
 
 ---

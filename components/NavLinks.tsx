@@ -11,11 +11,10 @@ export default function NavLinks() {
      after:absolute after:left-0 after:-bottom-1
      after:h-[2px] after:bg-cyan-400
      after:transition-all after:duration-300
-     ${
-       pathname === href
-         ? "text-cyan-400 after:w-full"
-         : "text-white after:w-0 hover:text-cyan-400 hover:after:w-full"
-     }`;
+     ${pathname === href
+      ? "text-cyan-400 after:w-full"
+      : "text-white after:w-0 hover:text-cyan-400 hover:after:w-full"
+    }`;
 
   return (
     <ul className="flex items-center gap-8 list-none">
@@ -56,6 +55,15 @@ export default function NavLinks() {
           className={navLinkClass("/my-bookings")}
         >
           My Bookings
+        </Link>
+      </li>
+      <li>
+        <Link
+          href="/watchlist"
+          aria-current={pathname === "/watchlist" ? "page" : undefined}
+          className={navLinkClass("/watchlist")}
+        >
+          Watchlist
         </Link>
       </li>
     </ul>

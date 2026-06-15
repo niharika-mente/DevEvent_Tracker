@@ -16,8 +16,16 @@ interface PageProps {
 }
 
 export default async function Page({ searchParams }: PageProps) {
+  const resolvedSearchParams = await searchParams;
+
+  const filters = {
+    query: resolvedSearchParams.query?.trim() || undefined,
+    mode: resolvedSearchParams.mode?.trim() || undefined,
+    tag: resolvedSearchParams.tag?.trim() || undefined,
+  };
+
   // 1. Fetch general events
-  const events = await getAllEvents();
+  const events = await getAllEvents(filters);
 
   // 2. Target tags for recommendation
   const userInterestedTags = ["Next.js", "React", "Frontend", "Hackathon"];
@@ -27,19 +35,19 @@ export default async function Page({ searchParams }: PageProps) {
 
   // Filters for individual categories
   const hackathons = events.filter(
-    (event: any) => event.tags?.includes("Hackathon")
+    (event: IEvent) => event.tags?.includes("Hackathon")
   );
 
   const seminars = events.filter(
-    (event: any) => event.tags?.includes("Seminar")
+    (event: IEvent) => event.tags?.includes("Seminar")
   );
 
   const internships = events.filter(
-    (event: any) => event.tags?.includes("Internship")
+    (event: IEvent) => event.tags?.includes("Internship")
   );
 
   const jobs = events.filter(
-    (event: any) => event.tags?.includes("Job")
+    (event: IEvent) => event.tags?.includes("Job")
   );
 
   return (
@@ -70,9 +78,9 @@ export default async function Page({ searchParams }: PageProps) {
           <section>
             <h3 className="mb-6">🔥 Hackathons</h3>
             <ul className="events">
-              {hackathons.map((event: any) => (
+              {hackathons.map((event: IEvent) => (
                 <li key={event._id} className="list-none">
-                  <EventCard {...(event as IEvent)} />
+                  <EventCard {...event} />
                 </li>
               ))}
             </ul>
@@ -82,9 +90,9 @@ export default async function Page({ searchParams }: PageProps) {
           <section>
             <h3 className="mb-6">📚 Seminars</h3>
             <ul className="events">
-              {seminars.map((event: any) => (
+              {seminars.map((event: IEvent) => (
                 <li key={event._id} className="list-none">
-                  <EventCard {...(event as IEvent)} />
+                  <EventCard {...event} />
                 </li>
               ))}
             </ul>
@@ -94,9 +102,9 @@ export default async function Page({ searchParams }: PageProps) {
           <section>
             <h3 className="mb-6">💼 Internships</h3>
             <ul className="events">
-              {internships.map((event: any) => (
+              {internships.map((event: IEvent) => (
                 <li key={event._id} className="list-none">
-                  <EventCard {...(event as IEvent)} />
+                  <EventCard {...event} />
                 </li>
               ))}
             </ul>
@@ -106,9 +114,9 @@ export default async function Page({ searchParams }: PageProps) {
           <section>
             <h3 className="mb-6">🚀 Jobs</h3>
             <ul className="events">
-              {jobs.map((event: any) => (
+              {jobs.map((event: IEvent) => (
                 <li key={event._id} className="list-none">
-                  <EventCard {...(event as IEvent)} />
+                  <EventCard {...event} />
                 </li>
               ))}
             </ul>

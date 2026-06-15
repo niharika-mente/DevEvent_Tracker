@@ -4,7 +4,7 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 const MODES = ['All', 'Online', 'Offline', 'Hybrid'];
-const POPULAR_TAGS = ['All', 'Hackathons', 'Meetups', 'Web3', 'React', 'DevOps', 'AI'];
+const POPULAR_TAGS = ['All', 'Hackathon', 'Meetup', 'Web3', 'React', 'DevOps', 'AI'];
 
 export default function SearchFilters() {
   const router = useRouter();

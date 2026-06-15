@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 interface Props {
   title: string;
@@ -18,10 +21,47 @@ const EventCard = ({
   time,
   slug,
 }: Props) => {
+  const [bookmarked, setBookmarked] = useState(() => {
+    if (typeof window === "undefined") return false;
+
+    const saved = JSON.parse(
+      localStorage.getItem("bookmarkedEvents") || "[]"
+    );
+
+    return saved.includes(slug);
+  });
+
+  const toggleBookmark = (
+    e: React.MouseEvent
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const saved = JSON.parse(
+      localStorage.getItem("bookmarkedEvents") || "[]"
+    );
+
+    let updated;
+
+    if (saved.includes(slug)) {
+      updated = saved.filter(
+        (item: string) => item !== slug
+      );
+      setBookmarked(false);
+    } else {
+      updated = [...saved, slug];
+      setBookmarked(true);
+    }
+
+    localStorage.setItem(
+      "bookmarkedEvents",
+      JSON.stringify(updated)
+    );
+  };
   return (
-<Link
-  href={`/events/${slug}`}
-  className="
+    <Link
+      href={`/events/${slug}`}
+      className="
     event-card
     group
     cursor-pointer
@@ -34,7 +74,7 @@ const EventCard = ({
     hover:bg-white/2
     hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
   "
->
+    >
       <div className="overflow-hidden">
         <Image
           src={image}
@@ -51,6 +91,14 @@ const EventCard = ({
       </div>
 
       <div className="p-4">
+        <div className="flex justify-end">
+          <button
+            onClick={toggleBookmark}
+            className="text-xl"
+          >
+            {bookmarked ? "🔖" : "📑"}
+          </button>
+        </div>
         <div className="flex flex-row gap-2 mt-1">
           <Image
             src="/icons/pin.svg"

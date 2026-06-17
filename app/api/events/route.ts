@@ -82,6 +82,13 @@ export async function GET(req: NextRequest) {
         const { searchParams } = new URL(req.url);
         const sortBy = searchParams.get('sortBy') || '';
 
+        // Pagination params
+        const rawPage = parseInt(searchParams.get('page') || '1', 10);
+        const rawLimit = parseInt(searchParams.get('limit') || '9', 10);
+        const page = isNaN(rawPage) || rawPage < 1 ? 1 : rawPage;
+        const limit = Math.min(100, Math.max(1, isNaN(rawLimit) ? 9 : rawLimit));
+        const skip = (page - 1) * limit;
+
         let sortField: Record<string, 1 | -1>;
         switch (sortBy) {
             case 'date_asc':
@@ -97,8 +104,9 @@ export async function GET(req: NextRequest) {
                 sortField = { title: -1 };
                 break;
             case 'popularity': {
-                // Aggregate and sort by booking count
                 const Booking = (await import('@/database/booking.model')).default;
+                const total = await Event.countDocuments();
+                const totalPages = Math.max(1, Math.ceil(total / limit));
                 const events = await Event.aggregate([
                     {
                         $lookup: {
@@ -111,15 +119,32 @@ export async function GET(req: NextRequest) {
                     { $addFields: { bookingCount: { $size: '$bookings' } } },
                     { $sort: { bookingCount: -1, createdAt: -1 } },
                     { $project: { bookings: 0, bookingCount: 0 } },
+                    { $skip: skip },
+                    { $limit: limit },
                 ]);
-                return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
+                return NextResponse.json({
+                    message: 'Events fetched successfully',
+                    events,
+                    total,
+                    totalPages,
+                    currentPage: page,
+                }, { status: 200 });
             }
             default:
                 sortField = { createdAt: -1 };
         }
 
-        const events = await Event.find().sort(sortField);
-        return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
+        const total = await Event.countDocuments();
+        const totalPages = Math.max(1, Math.ceil(total / limit));
+        const events = await Event.find().sort(sortField).skip(skip).limit(limit);
+
+        return NextResponse.json({
+            message: 'Events fetched successfully',
+            events,
+            total,
+            totalPages,
+            currentPage: page,
+        }, { status: 200 });
     } catch (e) {
         return NextResponse.json({ message: 'Event fetching failed', error: e }, { status: 500 });
     }

@@ -33,8 +33,8 @@ export default async function Page({ searchParams }: PageProps) {
     sortBy,
   };
 
-  // 1. Fetch general events
-  const events = await getAllEvents(filters);
+  // 1. Fetch general events (no pagination on home — high limit to get all for category sections)
+  const { events } = await getAllEvents(filters, 1, 100);
 
   // 2. Target tags for recommendation
   const userInterestedTags = ["Next.js", "React", "Frontend", "Hackathon"];

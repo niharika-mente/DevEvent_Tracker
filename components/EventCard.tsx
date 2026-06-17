@@ -13,67 +13,49 @@ interface Props {
   slug: string;
 }
 
-const EventCard = ({
-  title,
-  image,
-  location,
-  date,
-  time,
-  slug,
-}: Props) => {
+const EventCard = ({ title, image, location, date, time, slug }: Props) => {
   const [bookmarked, setBookmarked] = useState(() => {
     if (typeof window === "undefined") return false;
 
-    const saved = JSON.parse(
-      localStorage.getItem("bookmarkedEvents") || "[]"
-    );
+    const saved = JSON.parse(localStorage.getItem("bookmarkedEvents") || "[]");
 
     return saved.includes(slug);
   });
 
-  const toggleBookmark = (
-    e: React.MouseEvent
-  ) => {
+  const toggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const saved = JSON.parse(
-      localStorage.getItem("bookmarkedEvents") || "[]"
-    );
+    const saved = JSON.parse(localStorage.getItem("bookmarkedEvents") || "[]");
 
     let updated;
 
     if (saved.includes(slug)) {
-      updated = saved.filter(
-        (item: string) => item !== slug
-      );
+      updated = saved.filter((item: string) => item !== slug);
       setBookmarked(false);
     } else {
       updated = [...saved, slug];
       setBookmarked(true);
     }
 
-    localStorage.setItem(
-      "bookmarkedEvents",
-      JSON.stringify(updated)
-    );
+    localStorage.setItem("bookmarkedEvents", JSON.stringify(updated));
   };
   return (
     <Link
       href={`/events/${slug}`}
       className="
-    event-card
-    group
-    cursor-pointer
-    rounded-2xl
-    overflow-hidden
-    border border-cyan-500/10
-    transition-all duration-300 ease-out
-    hover:-translate-y-2
-    hover:border-cyan-400/30
-    hover:bg-white/2
-    hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
-  "
+        event-card
+        group
+        cursor-pointer
+        rounded-2xl
+        overflow-hidden
+        border border-cyan-500/10
+        transition-all duration-300 ease-out
+        hover:-translate-y-2
+        hover:border-cyan-400/30
+        hover:bg-white/2
+        hover:shadow-[0_0_25px_rgba(34,211,238,0.15)]
+      "
     >
       <div className="overflow-hidden">
         <Image
@@ -92,20 +74,12 @@ const EventCard = ({
 
       <div className="p-4">
         <div className="flex justify-end">
-          <button
-            onClick={toggleBookmark}
-            className="text-xl"
-          >
+          <button onClick={toggleBookmark} className="text-xl">
             {bookmarked ? "🔖" : "📑"}
           </button>
         </div>
         <div className="flex flex-row gap-2 mt-1">
-          <Image
-            src="/icons/pin.svg"
-            alt="location"
-            width={14}
-            height={14}
-          />
+          <Image src="/icons/pin.svg" alt="location" width={14} height={14} />
           <p>{location}</p>
         </div>
 
@@ -125,12 +99,7 @@ const EventCard = ({
           </div>
 
           <div>
-            <Image
-              src="/icons/clock.svg"
-              alt="time"
-              width={14}
-              height={14}
-            />
+            <Image src="/icons/clock.svg" alt="time" width={14} height={14} />
             <p>{time}</p>
           </div>
         </div>

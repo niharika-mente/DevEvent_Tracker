@@ -6,6 +6,8 @@ import LightRays from "../components/LightRays";
 import Navbar from "../components/Navbar";
 import { PostHogProvider } from "./providers";
 import { Toaster } from "sonner";
+import BackToTop from '../components/BackToTop';
+
 
 const SchibstedGrotesk = Schibsted_Grotesk({
   variable: "--font-schibsted-grotesk",
@@ -56,10 +58,10 @@ export default function RootLayout({
             <main>
               {children}
             </main>
+            <BackToTop/>
           </PostHogProvider>
         </Suspense>
       </body>
     </html>
   );
-}
-
+}  

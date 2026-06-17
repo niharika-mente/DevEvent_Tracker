@@ -75,12 +75,50 @@ export async function POST(req: NextRequest) {
     }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     try {
         await connectDB();
 
-        const events = await Event.find().sort({ createdAt: -1 });
+        const { searchParams } = new URL(req.url);
+        const sortBy = searchParams.get('sortBy') || '';
 
+        let sortField: Record<string, 1 | -1>;
+        switch (sortBy) {
+            case 'date_asc':
+                sortField = { date: 1 };
+                break;
+            case 'date_desc':
+                sortField = { date: -1 };
+                break;
+            case 'name_asc':
+                sortField = { title: 1 };
+                break;
+            case 'name_desc':
+                sortField = { title: -1 };
+                break;
+            case 'popularity': {
+                // Aggregate and sort by booking count
+                const Booking = (await import('@/database/booking.model')).default;
+                const events = await Event.aggregate([
+                    {
+                        $lookup: {
+                            from: Booking.collection.name,
+                            localField: '_id',
+                            foreignField: 'eventId',
+                            as: 'bookings',
+                        },
+                    },
+                    { $addFields: { bookingCount: { $size: '$bookings' } } },
+                    { $sort: { bookingCount: -1, createdAt: -1 } },
+                    { $project: { bookings: 0, bookingCount: 0 } },
+                ]);
+                return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
+            }
+            default:
+                sortField = { createdAt: -1 };
+        }
+
+        const events = await Event.find().sort(sortField);
         return NextResponse.json({ message: 'Events fetched successfully', events }, { status: 200 });
     } catch (e) {
         return NextResponse.json({ message: 'Event fetching failed', error: e }, { status: 500 });

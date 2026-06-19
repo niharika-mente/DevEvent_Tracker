@@ -3,7 +3,20 @@ import { Event } from "@/database";
 
 const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
-export async function getAllEvents(filters?: { query?: string; mode?: string; tag?: string }, page = 1, limit = 50) {
+type SortBy = 'date_asc' | 'date_desc' | 'name_asc' | 'name_desc' | 'popularity';
+
+export interface PaginatedEvents {
+  events: any[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
+
+export async function getAllEvents(
+  filters?: { query?: string; mode?: string; tag?: string; sortBy?: SortBy },
+  page = 1,
+  limit = 9
+): Promise<PaginatedEvents> {
   try {
     await connectToDatabase();
     const queryCondition: any = {};
@@ -22,24 +35,72 @@ export async function getAllEvents(filters?: { query?: string; mode?: string; ta
       queryCondition.tags = { $regex: new RegExp(`^${safeTag}$`, 'i') };
     }
 
-    let query = Event.find(queryCondition);
+    const safePage = Math.max(1, isNaN(Number(page)) ? 1 : Number(page));
+    const safeLimit = Math.min(100, Math.max(1, isNaN(Number(limit)) ? 9 : Number(limit)));
+    const skip = (safePage - 1) * safeLimit;
 
-    if (filters?.query) {
-        query = query.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
-    } else {
-        query = query.sort({ createdAt: -1 });
+    // Get total count for pagination metadata
+    const total = await Event.countDocuments(queryCondition);
+    const totalPages = Math.max(1, Math.ceil(total / safeLimit));
+
+    // Popularity sort — use aggregation pipeline with $lookup on bookings
+    if (filters?.sortBy === 'popularity') {
+      const matchStage = Object.keys(queryCondition).length ? [{ $match: queryCondition }] : [];
+      const results = await Event.aggregate([
+        ...matchStage,
+        {
+          $lookup: {
+            from: 'bookings',
+            localField: '_id',
+            foreignField: 'eventId',
+            as: 'bookings',
+          },
+        },
+        { $addFields: { bookingCount: { $size: '$bookings' } } },
+        { $sort: { bookingCount: -1, createdAt: -1 } },
+        { $project: { bookings: 0, bookingCount: 0 } },
+        { $skip: skip },
+        { $limit: safeLimit },
+      ]);
+      return {
+        events: JSON.parse(JSON.stringify(results)),
+        total,
+        totalPages,
+        currentPage: safePage,
+      };
     }
 
-    const safePage = Math.max(1, isNaN(Number(page)) ? 1 : Number(page));
-    const safeLimit = Math.min(100, Math.max(1, isNaN(Number(limit)) ? 50 : Number(limit)));
+    let query = Event.find(queryCondition);
 
-    const skip = (safePage - 1) * safeLimit;
+    // Apply sort
+    const sortBy = filters?.sortBy;
+    if (sortBy === 'date_asc') {
+      query = query.sort({ date: 1 });
+    } else if (sortBy === 'date_desc') {
+      query = query.sort({ date: -1 });
+    } else if (sortBy === 'name_asc') {
+      query = query.sort({ title: 1 });
+    } else if (sortBy === 'name_desc') {
+      query = query.sort({ title: -1 });
+    } else if (filters?.query) {
+      // Relevance sort when full-text searching
+      query = query.select({ score: { $meta: 'textScore' } }).sort({ score: { $meta: 'textScore' } });
+    } else {
+      // Default: newest first
+      query = query.sort({ createdAt: -1 });
+    }
+
     const events = await query.skip(skip).limit(safeLimit);
-    return JSON.parse(JSON.stringify(events));
+    return {
+      events: JSON.parse(JSON.stringify(events)),
+      total,
+      totalPages,
+      currentPage: safePage,
+    };
 
   } catch (error) {
     console.error('Error fetching events:', error);
-    return []; 
+    return { events: [], total: 0, totalPages: 1, currentPage: 1 };
   }
 }
 
@@ -60,8 +121,6 @@ export async function getSimilarEventsBySlug(
 
   return JSON.parse(JSON.stringify(events));
 }
-
-// Add this at the very bottom of your lib/actions/event.action.ts file
 
 export async function getRecommendedEvents(userTags: string[] = []) {
   try {

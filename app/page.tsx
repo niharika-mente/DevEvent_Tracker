@@ -12,20 +12,29 @@ interface PageProps {
     query?: string;
     mode?: string;
     tag?: string;
+    sortBy?: string;
   }>;
 }
 
 export default async function Page({ searchParams }: PageProps) {
   const resolvedSearchParams = await searchParams;
 
+  const validSortBy = ["date_asc", "date_desc", "name_asc", "name_desc", "popularity"] as const;
+  type SortByType = (typeof validSortBy)[number];
+  const rawSortBy = resolvedSearchParams.sortBy?.trim();
+  const sortBy = validSortBy.includes(rawSortBy as SortByType)
+    ? (rawSortBy as SortByType)
+    : undefined;
+
   const filters = {
     query: resolvedSearchParams.query?.trim() || undefined,
     mode: resolvedSearchParams.mode?.trim() || undefined,
     tag: resolvedSearchParams.tag?.trim() || undefined,
+    sortBy,
   };
 
-  // 1. Fetch general events
-  const events = await getAllEvents(filters);
+  // 1. Fetch general events (no pagination on home — high limit to get all for category sections)
+  const { events } = await getAllEvents(filters, 1, 100);
 
   // 2. Target tags for recommendation
   const userInterestedTags = ["Next.js", "React", "Frontend", "Hackathon"];

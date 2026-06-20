@@ -42,11 +42,11 @@ export default function SearchFilters() {
   const selectClass =
     'px-3 py-1.5 rounded-lg border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] transition cursor-pointer';
 
-  const handleClearFilters = () =>{
+  const handleClearFilters = () => {
 
     //make a copy of search params
   const params = new URLSearchParams(searchParams.toString());
-
+  setSearch('');
   //removing the filters
   params.delete("query");
   params.delete("mode");

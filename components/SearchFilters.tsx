@@ -19,7 +19,7 @@ export default function SearchFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
+  
   const [search, setSearch] = useState(searchParams.get('query') || '');
 
   const handleFilterChange = (key: string, value: string) => {
@@ -42,6 +42,22 @@ export default function SearchFilters() {
   const selectClass =
     'px-3 py-1.5 rounded-lg border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] transition cursor-pointer';
 
+  const handleClearFilters = () =>{
+
+    //make a copy of search params
+  const params = new URLSearchParams(searchParams.toString());
+
+  //removing the filters
+  params.delete("query");
+  params.delete("mode");
+  params.delete("sortBy");
+  params.delete("tag");
+
+  //updating the url
+  router.push(`${pathname}?${params.toString()}`, {
+    scroll: false,
+  });
+  }
   return (
     <div className="w-full max-w-6xl mx-auto my-6 px-4 space-y-4">
       {/* Search input */}
@@ -57,8 +73,9 @@ export default function SearchFilters() {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] placeholder:text-[var(--color-light-200)] focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] shadow-sm transition"
         />
-      </div>
 
+      </div>
+      
       {/* Filter row */}
       <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between pt-1">
 
@@ -122,6 +139,13 @@ export default function SearchFilters() {
             ))}
           </select>
         </div>
+        
+      </div>
+      <div className='flex justify-end '>
+      <button className='flex flex-col bg-[var(--color-dark-200)] p-1.5 rounded-sm font-normal text-sm text-[var(--color-light-100)]  justify-end' onClick={handleClearFilters}>
+        Clear Filters
+      </button>
+        
       </div>
     </div>
   );

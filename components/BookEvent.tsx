@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { createBooking } from "@/lib/actions/booking.actions";
-import posthog from "posthog-js";
+import { captureEvent } from "@/lib/posthog/helpers";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
     const [email, setEmail] = useState('');
@@ -27,10 +28,10 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
             if (response.success) {
                 setSubmitted(true);
                 // Do not send raw email (PII) to analytics.
-                posthog.capture('event_booked', { eventId, slug });
+                captureEvent(POSTHOG_EVENTS.EVENT_BOOKED, { eventId, slug });
             } else {
                 setError(response.error || "An unexpected error occurred. Please try again.");
-                posthog.captureException('Booking creation failed');
+                captureEvent(POSTHOG_EVENTS.BOOKING_FAILED, { eventId, slug, email });
             }
         } catch {
             setError("A network error occurred. Please try again.");
@@ -54,13 +55,11 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
                             id="email"
                             placeholder="Enter your email address"
                             required
-                            disabled={isSubmitting} // 1. Freeze input when submitting
+                            disabled={isSubmitting}
                         />
-                        {/* 2. Show the red error message under the input if an error occurs */}
                         {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
                     </div>
 
-                    {/* 3. Disable the button and change text dynamically */}
                     <button type="submit" className="button-submit" disabled={isSubmitting}>
                         {isSubmitting ? "Submitting..." : "Submit"}
                     </button>

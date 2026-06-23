@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { captureEvent } from '@/lib/posthog/helpers';
+import { POSTHOG_EVENTS } from '@/lib/posthog/events';
 
 const MODES = ['All', 'Online', 'Offline', 'Hybrid'];
 const POPULAR_TAGS = ['All', 'Hackathon', 'Meetup', 'Web3', 'React', 'DevOps', 'AI'];
@@ -21,11 +23,15 @@ export default function SearchFilters() {
       params.delete(key);
     }
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, { filter: key, value });
   };
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       handleFilterChange('query', search);
+      if (search.trim()) {
+        captureEvent(POSTHOG_EVENTS.EVENT_SEARCHED, { query: search });
+      }
     }, 400);
     return () => clearTimeout(delayDebounceFn);
   }, [search]);

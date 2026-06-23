@@ -5,6 +5,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { createEvent } from "@/lib/actions/create-event.actions";
+import { captureEvent, captureException } from "@/lib/posthog/helpers";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -63,12 +65,22 @@ const CreateEventForm = () => {
     if (result.success) {
 
       toast.success("Event created successfully!");
+      captureEvent(POSTHOG_EVENTS.EVENT_CREATED, {
+        type: data.type,
+        mode: data.mode,
+        location: data.location,
+      });
 
       reset();
 
     } else {
 
       toast.error(result.error || "Failed to create event");
+      captureEvent(POSTHOG_EVENTS.EVENT_CREATION_FAILED, {
+        reason: result.error || "unknown",
+        type: data.type,
+        mode: data.mode,
+      });
 
     }
 
@@ -77,6 +89,7 @@ const CreateEventForm = () => {
     console.error(error);
 
     toast.error("Something went wrong");
+    captureException(error instanceof Error ? error : new Error("event_creation_exception"));
 
   }
 };

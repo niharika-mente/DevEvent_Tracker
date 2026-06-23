@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { captureEvent } from "@/lib/posthog/helpers";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 interface Props {
   title: string;
@@ -48,9 +50,11 @@ const EventCard = ({
         (item: string) => item !== slug
       );
       setBookmarked(false);
+      captureEvent(POSTHOG_EVENTS.EVENT_UNBOOKMARKED, { slug, title });
     } else {
       updated = [...saved, slug];
       setBookmarked(true);
+      captureEvent(POSTHOG_EVENTS.EVENT_BOOKMARKED, { slug, title });
     }
 
     localStorage.setItem(
@@ -58,9 +62,11 @@ const EventCard = ({
       JSON.stringify(updated)
     );
   };
+
   return (
     <Link
       href={`/events/${slug}`}
+      onClick={() => captureEvent(POSTHOG_EVENTS.EVENT_VIEWED, { slug, title })}
       className="
     event-card
     group

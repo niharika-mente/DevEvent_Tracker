@@ -4,14 +4,8 @@ import { useEffect, Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import posthog from "posthog-js";
 import { PostHogProvider as PHProvider } from "posthog-js/react";
-
-if (typeof window !== "undefined") {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    person_profiles: "identified_only",
-    capture_pageview: false,
-  });
-}
+import { captureEvent } from "@/lib/posthog/helpers";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 function PostHogPageTracker() {
   const pathname = usePathname();
@@ -23,7 +17,7 @@ function PostHogPageTracker() {
       if (searchParams.toString()) {
         url += `?${searchParams.toString()}`;
       }
-      posthog.capture("$pageview", { $current_url: url });
+      captureEvent(POSTHOG_EVENTS.PAGE_VIEW, { $current_url: url });
     }
   }, [pathname, searchParams]);
 

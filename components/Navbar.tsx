@@ -5,24 +5,21 @@ import NavLinks from "./NavLinks";
 
 const Navbar = () => {
   return (
-    <header>
-      <nav className="flex items-center justify-between p-4">
-        {" "}
-        {/* Added basic layout classes if needed */}
-        <Link href="/" className="logo flex items-center gap-2">
-          <Image src="/icons/logo.png" alt="logo" width={24} height={24} />
-          <p className="text-white font-bold">DevEvent</p>
+    <header className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
+      <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
+          <Image
+            src="/icons/logo.png"
+            alt="logo"
+            width={24}
+            height={24}
+          />
+          <span className="text-white font-bold text-lg">
+            DevEvent
+          </span>
         </Link>
-        {/* Wrapping NavLinks in Suspense stops 'usePathname' from stalling 
-          the static build of pages like /events/[slug]
-        */}
-        <Suspense
-          fallback={
-            <div className="text-gray-400 text-sm animate-pulse">
-              Loading...
-            </div>
-          }
-        >
+
+        <Suspense fallback={null}>
           <NavLinks />
         </Suspense>
       </nav>

@@ -85,3 +85,72 @@ We have set up templates to help you raise clean and structured Issues and Pull 
 - **Pull Request Template**: Ensure your code meets style guides, lists issue references, and describes verification tests.
 
 *Let's build the community space for developers together.*
+
+---
+
+## Contributors
+
+Thanks to all the amazing people who contribute to **DevEvent_Tracker** 🚀
+
+### Contribution Workflow
+
+Below is the step-by-step workflow for contributing to this project. Please make sure to follow the guidelines detailed in our [Contributing Guidelines](docs/CONTRIBUTING.md).
+
+```mermaid
+flowchart TD
+    Start([Start]) --> FindIssue{Choose Path}
+    
+    FindIssue -->|Find Existing Issue| Comment["Comment on Issue requesting assignment"]
+    FindIssue -->|Found a Bug / Have Idea| CreateIssue["Create Issue (using Bug/Feature Template)"]
+    
+    CreateIssue --> Approved{Issue Approved?}
+    Approved -->|Yes| Comment
+    Approved -->|No| Close["Issue Closed"]
+    
+    Comment --> Assigned{Assigned to you?}
+    Assigned -->|Yes| Fork["Fork & Clone Repository"]
+    Assigned -->|No / Limit Exceeded| Comment
+    
+    Fork --> Branch["Create Branch (feature/..., fix/..., docs/...)"]
+    Branch --> Develop["Develop & Test Locally"]
+    Develop --> Commit["Commit using Semantic Commits (feat:, fix:, docs:)"]
+    Commit --> Sync["Sync with upstream main & Resolve conflicts"]
+    Sync --> Push["Push to your Fork"]
+    Push --> PR["Open PR (using Template & link Issue)"]
+    
+    PR --> Review{Code Review}
+    Review -->|Revisions Requested| Fix["Address Revisions & Push"]
+    Fix --> Review
+    Review -->|Approved| SSOC["SSOC Label Added"]
+    SSOC --> Merge([PR Merged! 🎉])
+
+    classDef startEnd fill:#10B981,stroke:#059669,stroke-width:2px,color:#fff;
+    classDef step fill:#1E293B,stroke:#475569,stroke-width:1.5px,color:#F8FAF5;
+    classDef decision fill:#3B82F6,stroke:#2563EB,stroke-width:2px,color:#fff;
+    classDef stop fill:#EF4444,stroke:#DC2626,stroke-width:2px,color:#fff;
+
+    class Start,Merge startEnd;
+    class Comment,CreateIssue,Fork,Branch,Develop,Commit,Sync,Push,PR,Fix,SSOC step;
+    class FindIssue,Approved,Assigned,Review decision;
+    class Close stop;
+```
+
+<p align="center">
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=niharika-mente/DevEvent_Tracker" alt="Contributors"/>
+  </a>
+</p>
+
+---
+
+## Project Support
+
+<p align="center">
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/stargazers">
+    <img src="https://img.shields.io/github/stars/niharika-mente/DevEvent_Tracker?style=social" alt="Stars">
+  </a>
+  &nbsp;&nbsp;
+  <a href="https://github.com/niharika-mente/DevEvent_Tracker/network/members">
+    <img src="https://img.shields.io/github/forks/niharika-mente/DevEvent_Tracker?style=social" alt="Forks">
+  </a>
+</p>

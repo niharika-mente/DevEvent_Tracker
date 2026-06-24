@@ -1,5 +1,5 @@
-import { connectToDatabase } from "@/lib/db"; 
-import Event from "@/lib/models/event.model"; 
+import connectToDatabase from "@/lib/mongodb";
+import Event from "@/database/event.model";
 
 const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 

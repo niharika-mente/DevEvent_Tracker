@@ -37,15 +37,15 @@ export default function SearchFilters() {
         placeholder="Search events by title, description or tags..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition"
+        className="w-full px-4 py-3 rounded-xl border border-cyan-500/20 bg-[#111827]/80 text-white placeholder:text-gray-400 backdrop-blur-md focus:outline-none focus:ring-2 focus:ring-cyan-400 transition"
       />
       <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between pt-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-500">Mode:</span>
+          <span className="text-sm font-medium text-gray-300">Mode:</span>
           <select
             value={searchParams.get('mode') || 'All'}
             onChange={(e) => handleFilterChange('mode', e.target.value)}
-            className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white dark:bg-gray-900 text-sm focus:outline-none"
+            className="px-3 py-2 rounded-lg border border-cyan-500/20 bg-[#111827] text-white text-sm focus:outline-none focus:ring-2 focus:ring-cyan-400"
           >
             {MODES.map((mode) => (
               <option key={mode} value={mode}>{mode}</option>
@@ -53,7 +53,7 @@ export default function SearchFilters() {
           </select>
         </div>
         <div className="flex items-center gap-2 overflow-x-auto max-w-full">
-          <span className="text-sm font-medium text-gray-500 shrink-0">Tags:</span>
+          <span className="text-sm font-medium text-gray-300 shrink-0">Tags:</span>
           <div className="flex gap-1.5">
             {POPULAR_TAGS.map((tag) => {
               const isActive = (searchParams.get('tag') || 'All') === tag;
@@ -61,9 +61,10 @@ export default function SearchFilters() {
                 <button
                   key={tag}
                   onClick={() => handleFilterChange('tag', tag)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full border transition ${
-                    isActive ? 'bg-blue-600 text-white' : 'bg-gray-50 text-gray-600'
-                  }`}
+                  className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all duration-200 ${isActive
+                      ? 'bg-cyan-500 text-black border-cyan-500'
+                      : 'bg-[#111827]/80 text-gray-300 border-cyan-500/20 hover:bg-cyan-500/10'
+                    }`}
                 >
                   {tag}
                 </button>

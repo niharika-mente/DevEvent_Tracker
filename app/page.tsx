@@ -15,8 +15,6 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  'use cache';
-  cacheLife('hours');
   
   // 1. Resolve search variables from the URL router interface
   const resolvedParams = await searchParams;

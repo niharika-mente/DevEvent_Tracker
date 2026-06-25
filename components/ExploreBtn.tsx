@@ -5,7 +5,7 @@ import Image from "next/image";
 const ExploreBtn = () => {
   return (
     <a
-      href="#events"
+      href="/events"
       className="
         group
         mt-7 mx-auto

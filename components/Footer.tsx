@@ -41,6 +41,12 @@ const Footer = () => {
                   Create Event
                 </Link>
               </li>
+
+              <li>
+                <Link href="/my-bookings" className="hover:text-cyan-400 transition duration-300">
+                  My Bookings
+                </Link>
+              </li>
             </ul>
           </div>
 

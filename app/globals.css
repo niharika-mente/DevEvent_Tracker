@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 :root {
   --color-blue: #94eaff;
   --color-light-100: #e7f2ff;
@@ -163,7 +168,7 @@
     }
 
     ul {
-      @apply flex flex-row items-center gap-6;
+      @apply flex flex-row items-center gap-6 list-none;
     }
   }
 
@@ -171,7 +176,7 @@
     @apply grid md:grid-cols-3 gap-10 sm:grid-cols-2 grid-cols-1;
   }
 
-  #event-card {
+  .event-card {
     @apply flex flex-col gap-3;
 
     .poster {
@@ -250,6 +255,8 @@
   .pill {
     @apply bg-dark-100 text-light-100 text-xs rounded-[6px] px-5 py-2;
   }
+
+
 
   #book-event {
     @apply flex flex-col gap-6;

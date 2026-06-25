@@ -15,6 +15,7 @@ export interface IEvent {
     date: string;
     time: string;
     mode: "online" | "offline" | "hybrid";
+    type: "hackathon" | "conference" | "workshop" | "meetup";
     audience: string;
     agenda: string[];
     organizer: string;
@@ -142,6 +143,12 @@ const EventSchema = new Schema<IEvent>(
             required: [true, "Mode is required"],
             trim: true,
         },
+        type: {
+            type: String,
+            enum: ["hackathon", "conference", "workshop", "meetup"],
+            required: [true, "Event type is required"],
+            trim: true,
+        },
         audience: {
             type: String,
             required: [true, "Audience is required"],
@@ -173,6 +180,25 @@ const EventSchema = new Schema<IEvent>(
         timestamps: true, // Automatically adds createdAt and updatedAt
     }
 );
+
+/**
+ * Indexes for search and performance.
+ */
+EventSchema.index({ title: 'text', description: 'text', tags: 'text' });
+
+/**
+ * Cascading delete hooks to remove orphaned bookings.
+ */
+EventSchema.pre('findOneAndDelete', async function() {
+    const doc = await this.model.findOne(this.getQuery());
+    if (doc) {
+        await mongoose.models.Booking?.deleteMany({ eventId: doc._id });
+    }
+});
+
+EventSchema.pre('deleteOne', { document: true, query: false }, async function() {
+    await mongoose.models.Booking?.deleteMany({ eventId: this._id });
+});
 
 /**
  * Pre-save hook:

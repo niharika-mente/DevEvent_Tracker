@@ -4,6 +4,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { createEvent } from "@/lib/actions/create-event.actions";
+import { captureEvent, captureException } from "@/lib/posthog/helpers";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
 
 const eventSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
@@ -25,6 +28,7 @@ const eventSchema = z.object({
   location: z.string().min(2, "Location is required"),
 
   mode: z.string().min(1, "Select event mode"),
+  type: z.string().min(1, "Select event type"),
 
   targetAudience: z
     .string()
@@ -53,16 +57,42 @@ const CreateEventForm = () => {
     resolver: zodResolver(eventSchema),
   });
 
-  const onSubmit = async (_data: EventFormData) => {
-    try {
+  const onSubmit = async (data: EventFormData) => {
+  try {
+
+    const result = await createEvent(data);
+
+    if (result.success) {
 
       toast.success("Event created successfully!");
+      captureEvent(POSTHOG_EVENTS.EVENT_CREATED, {
+        type: data.type,
+        mode: data.mode,
+        location: data.location,
+      });
 
       reset();
-    } catch (error) {
-      toast.error("Something went wrong");
+
+    } else {
+
+      toast.error(result.error || "Failed to create event");
+      captureEvent(POSTHOG_EVENTS.EVENT_CREATION_FAILED, {
+        reason: result.error || "unknown",
+        type: data.type,
+        mode: data.mode,
+      });
+
     }
-  };
+
+  } catch (error) {
+
+    console.error(error);
+
+    toast.error("Something went wrong");
+    captureException(error instanceof Error ? error : new Error("event_creation_exception"));
+
+  }
+};
 const inputStyles = `
   w-full p-3 rounded-xl
   bg-black/30
@@ -111,6 +141,7 @@ const buttonStyles = `
 
       {/* BASIC INFO */}
       <div className={sectionStyles}>
+        {/* Closing div for Audience & Agenda */}
         <h2 className="text-2xl font-bold">Basic Info</h2>
 
         <div>
@@ -166,8 +197,8 @@ const buttonStyles = `
       </div>
 
       {/* EVENT DETAILS */}
-      <div className={sectionStyles}>
-        <h2 className="text-2xl font-bold">Event Details</h2>
+<div className={sectionStyles}>
+  <h2 className="text-2xl font-bold">Event Details</h2>
 
         <div>
           <label htmlFor="overview-input" className="block mb-2">Overview</label>
@@ -260,11 +291,35 @@ const buttonStyles = `
               {errors.mode.message}
             </p>
           )}
-        </div>
-      </div>
+          <div>
+  <label htmlFor="event-type-select" className="block mb-2">
+    Event Type
+  </label>
 
+  <select
+    id="event-type-select"
+    {...register("type")}
+    className={selectStyles}
+  >
+    <option value="">Select Type</option>
+    <option value="hackathon">Hackathon</option>
+    <option value="conference">Conference</option>
+    <option value="workshop">Workshop</option>
+    <option value="meetup">Meetup</option>
+  </select>
+
+  {errors.type && (
+    <p className="text-red-400 text-sm mt-2">
+      {errors.type.message}
+    </p>
+  )}
+</div>
+</div>
       {/* AUDIENCE & AGENDA */}
       <div className={sectionStyles}>
+      {/* Closing div for Audience & Agenda */}
+      </div>
+      {/* Closing div for Audience & Agenda */}
         <h2 className="text-2xl font-bold">Audience & Agenda</h2>
 
         <div>
@@ -300,7 +355,7 @@ const buttonStyles = `
             </p>
           )}
         </div>
-      </div>
+      </div> {/* Closing div for Organizer */}
 
       {/* ORGANIZER */}
       <div className={sectionStyles}>
@@ -342,17 +397,16 @@ const buttonStyles = `
       </div>
 
       {/* SUBMIT BUTTON */}
-<div className="flex justify-center">
-
-  <button
-        type="submit"
-        className={buttonStyles}>
-        Create Event
-      </button>
+      <div className="flex justify-center">
+        <button
+          type="submit"
+          className={buttonStyles}>
+          Create Event
+        </button>
       </div>
-    </form>
     
-  );
-};
-
+    </form>
+    );
+  };
+     
 export default CreateEventForm;

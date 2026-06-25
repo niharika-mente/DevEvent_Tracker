@@ -28,13 +28,13 @@ const Page = async ({ searchParams }: PageProps) => {
 
   return (
     <section>
-      <h1 className="text-center">The Hub for Every Dev <br /> Event You Can&apos;t Miss</h1>
-      <p className="text-center mt-5">Hackathons, Meetups, and Conferences, All in One Place</p>
+     <h1 className="text-center drop-shadow-[0_6px_30px_rgba(0,0,0,0.7)]">The Hub for Every Dev <br /> Event You Can&apos;t Miss</h1>
+      <p className="text-center mt-5 max-w-3xl mx-auto text-lg text-gray-200 leading-8 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">Hackathons, Meetups, and Conferences, All in One Place</p>
 
       <ExploreBtn />
 
       {/* 3. Insert the newly generated Search and Filter component bar */}
-      <div className="mt-10">
+      <div className="mt-12">
         <SearchFilters />
       </div>
 
@@ -52,10 +52,10 @@ const Page = async ({ searchParams }: PageProps) => {
           </ul>
         ) : (
           /* Smooth Contextual Empty State displayed dynamically */
-          <div className="flex flex-col items-center justify-center text-center p-12 border border-dashed border-gray-300 rounded-2xl max-w-xl mx-auto bg-white/50">
-            <h4 className="text-lg font-semibold text-gray-800 mb-1">No events found</h4>
+           <div className="flex flex-col items-center justify-center text-center p-12 rounded-2xl max-w-xl mx-auto border border-cyan-500/20 bg-[#111827]/80 backdrop-blur-md shadow-lg">
+            <h4 className="text-lg font-semibold text-white mb-2">No events found</h4>
             {/* Fixed Linting Error: Escaped the apostrophe here */}
-            <p className="text-sm text-gray-500 max-w-xs">
+            <p className="text-sm text-gray-300 max-w-xs leading-6">
               We couldn&apos;t find any listings matching your search constraints. Try checking your spelling or adjusting filters.
             </p>
           </div>

@@ -2,70 +2,81 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
+
+const links = [
+  { name: "Home", href: "/" },
+  { name: "Events", href: "/events" },
+  { name: "Create Event", href: "/create-event" },
+  { name: "My Bookings", href: "/my-bookings" },
+  { name: "Watchlist", href: "/watchlist" },
+];
 
 export default function NavLinks() {
   const pathname = usePathname();
-
-  const navLinkClass = (href: string) =>
-    `relative transition-all duration-300
-     after:absolute after:left-0 after:-bottom-1
-     after:h-[2px] after:bg-cyan-400
-     after:transition-all after:duration-300
-     ${pathname === href
-      ? "text-cyan-400 after:w-full"
-      : "text-white after:w-0 hover:text-cyan-400 hover:after:w-full"
-    }`;
+  const [open, setOpen] = useState(false);
 
   return (
-    <ul className="flex items-center gap-8 list-none">
-      <li>
-        <Link
-          href="/"
-          aria-current={pathname === "/" ? "page" : undefined}
-          className={navLinkClass("/")}
-        >
-          Home
-        </Link>
-      </li>
+    <>
+      {/* Desktop Menu */}
+      <div className="hidden md:flex items-center gap-8">
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setOpen(false)}
+            aria-current={pathname === link.href ? "page" : undefined}
+            className={`relative group text-sm cursor-pointer ${
+              pathname === link.href
+                ? "text-cyan-400"
+                : "text-white hover:text-cyan-400"
+            }`}
+          >
+            {link.name}
 
-      <li>
-        <Link
-          href="/events"
-          aria-current={pathname === "/events" ? "page" : undefined}
-          className={navLinkClass("/events")}
-        >
-          Events
-        </Link>
-      </li>
+            <span
+              className={`absolute left-0 -bottom-1 h-[2px] bg-cyan-400 transition-all duration-300 ease-in-out ${
+                pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+              }`}
+            />
+          </Link>
+        ))}
+      </div>
 
-      <li>
-        <Link
-          href="/create-event"
-          aria-current={pathname === "/create-event" ? "page" : undefined}
-          className={navLinkClass("/create-event")}
-        >
-          Create Event
-        </Link>
-      </li>
+      <button
+        onClick={() => setOpen(!open)}
+        className="md:hidden text-white cursor-pointer"
+        aria-label="Toggle Menu"
+        aria-expanded={open}
+        aria-controls="mobile-menu"
+      >
+        {open ? <X size={26} /> : <Menu size={26} />}
+      </button>
 
-      <li>
-        <Link
-          href="/my-bookings"
-          aria-current={pathname === "/my-bookings" ? "page" : undefined}
-          className={navLinkClass("/my-bookings")}
+      {/* Mobile Menu */}
+      {open && (
+        <div
+          id="mobile-menu"
+          className="absolute top-full left-0 w-full bg-black border-t border-gray-800 md:hidden"
         >
-          My Bookings
-        </Link>
-      </li>
-      <li>
-        <Link
-          href="/watchlist"
-          aria-current={pathname === "/watchlist" ? "page" : undefined}
-          className={navLinkClass("/watchlist")}
-        >
-          Watchlist
-        </Link>
-      </li>
-    </ul>
+          <div className="flex flex-col p-4 gap-4">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                aria-current={pathname === link.href ? "page" : undefined}
+                className={`text-sm ${
+                  pathname === link.href ? "text-cyan-400" : "text-white"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

@@ -3,9 +3,12 @@ title: Strategic Suspense Boundaries
 impact: HIGH
 impactDescription: faster initial paint
 tags: async, suspense, streaming, layout-shift
+requires: "react >= 19.0.0 (for use() hook pattern)"
 ---
 
 ## Strategic Suspense Boundaries
+
+> **Note:** The `use()` hook pattern (alternative example below) requires React 19+. The async component + `<Suspense>` pattern works in React 18+.
 
 Instead of awaiting data in async components before returning JSX, use Suspense boundaries to show the wrapper UI faster while data loads.
 

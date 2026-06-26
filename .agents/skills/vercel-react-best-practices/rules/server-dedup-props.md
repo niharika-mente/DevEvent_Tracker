@@ -63,3 +63,5 @@ users={[{id:1},{id:2}]} sorted={users.toSorted()} // sends 2 arrays + 2 unique o
 ```
 
 **Exception:** Pass derived data when transformation is expensive or client doesn't need original.
+
+Reference: [Next.js Docs — Server Components](https://nextjs.org/docs/app/building-your-application/rendering/server-components)

@@ -48,3 +48,5 @@ function validateUsers(users: User[]) {
   return { valid: true }
 }
 ```
+
+Reference: [MDN — return statement](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/return)

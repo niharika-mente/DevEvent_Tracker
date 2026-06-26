@@ -1,6 +1,6 @@
 # Core Index Principles
 
-### Compound Index Guidelines
+## Compound Index Guidelines
 
 The first field of the index should be in the query's filter or sort condition.
 

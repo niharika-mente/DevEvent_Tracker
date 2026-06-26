@@ -26,3 +26,5 @@ for (let i = 0; i < len; i++) {
   process(value)
 }
 ```
+
+Reference: [MDN — Property accessors](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Property_accessors)

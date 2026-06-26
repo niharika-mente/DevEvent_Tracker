@@ -30,3 +30,5 @@ for (const user of users) {
   if (!user.isActive) inactive.push(user)
 }
 ```
+
+Reference: [MDN — Array.prototype.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter)

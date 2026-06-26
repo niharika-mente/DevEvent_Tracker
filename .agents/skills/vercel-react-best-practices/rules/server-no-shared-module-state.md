@@ -48,3 +48,5 @@ Safe exceptions:
 - Process-wide singletons that do not store request- or user-specific mutable data
 
 For static assets and config, see [Hoist Static I/O to Module Level](./server-hoist-static-io.md).
+
+Reference: [React Docs — Server Components](https://react.dev/reference/rsc/server-components)

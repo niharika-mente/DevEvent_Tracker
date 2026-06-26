@@ -20,7 +20,7 @@ db.collection.find({ a: { $exists: true } })
 
 ## Unanchored $regex vs. Anchored $regex
 
-**Bad** — Unanchored case insensitive regex cannot use the index efficiently:
+**Bad** — Unanchored case-insensitive regex cannot use the index efficiently:
 
 ```javascript
 db.collection.find({ name: { $regex: /smith/i } })

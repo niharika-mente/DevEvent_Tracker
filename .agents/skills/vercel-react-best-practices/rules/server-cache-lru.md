@@ -9,7 +9,20 @@ tags: server, cache, lru, cross-request
 
 `React.cache()` only works within one request. For data shared across sequential requests (user clicks button A then button B), use an LRU cache.
 
-**Implementation:**
+**Incorrect (no cross-request cache — DB queried on every request):**
+
+```typescript
+export async function getUser(id: string) {
+  // Hits DB on every request, even for recently fetched users
+  const user = await db.user.findUnique({ where: { id } })
+  return user
+}
+
+// Request 1: DB query
+// Request 2 (same user): DB query again
+```
+
+**Correct (LRU cache persists across requests):**
 
 ```typescript
 import { LRUCache } from 'lru-cache'

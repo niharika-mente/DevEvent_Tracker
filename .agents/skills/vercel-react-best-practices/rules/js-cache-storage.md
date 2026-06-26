@@ -68,3 +68,5 @@ document.addEventListener('visibilitychange', () => {
   }
 })
 ```
+
+Reference: [MDN — Web Storage API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API)

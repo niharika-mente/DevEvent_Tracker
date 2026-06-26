@@ -71,3 +71,5 @@ function Tracker() {
   )
 }
 ```
+
+Reference: [React Docs — useRef](https://react.dev/reference/react/useRef)

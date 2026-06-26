@@ -63,7 +63,7 @@ A core way to implement this philosophy is the fact that MongoDB exposes **flexi
 
 Another implication of the key principle is that information about the expected read and write workload becomes very relevant to schema design. If pieces of information from different entities are often queried or updated together, that means that prioritizing co-location of that data in the same document can lead to significant performance benefits. On the other hand, if certain pieces of information are rarely accessed together, it may make sense to store them separately to avoid loading more data than necessary.
 
-#### Schema Fundamentals Summary
+### Schema Fundamentals Summary
 
 - **Embed vs Reference**: Choose embedding or referencing based on access patterns: embed when data is always accessed together (1:1, 1:few, bounded arrays, atomic updates needed); reference when data is accessed independently, relationships are many-to-many, or arrays can grow without bound.
 - **Data accessed together stored together**: MongoDB's core principle: design schemas around queries, not entities. Embed related data to eliminate cross-collection joins and reduce round trips. Identify your API endpoints/pages, list the data each returns, then shape documents to match those queries.

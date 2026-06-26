@@ -21,7 +21,7 @@ Invoke **only** when the user wants:
 
 Do **not** invoke for routine query authoring unless the user has requested help with optimization, slow queries, or indexing.
 
-## High Level Workflow
+## High-Level Workflow
 
 ### General Performance Help
 

@@ -1,5 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
-import { Event } from "@/database";
+import Event from "@/database/event.model";
 
 const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 
@@ -52,7 +52,12 @@ export async function getAllEvents(
     const queryCondition: any = {};
 
     if (filters?.query) {
-      queryCondition.$text = { $search: filters.query };
+      const safeQuery = escapeRegex(filters.query);
+      queryCondition.$or = [
+        { title: { $regex: safeQuery, $options: 'i' } },
+        { description: { $regex: safeQuery, $options: 'i' } },
+        { tags: { $regex: safeQuery, $options: 'i' } }
+      ];
     }
 
     if (filters?.mode && filters.mode !== 'All') {
@@ -121,7 +126,7 @@ export async function getAllEvents(
 
   } catch (error) {
     console.error('Error fetching events:', error);
-    return { events: [], total: 0, totalPages: 1, currentPage: 1 };
+    return []; 
   }
 }
 

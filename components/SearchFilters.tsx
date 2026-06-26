@@ -141,8 +141,8 @@ export default function SearchFilters() {
         </div>
         
       </div>
-      <div className='flex justify-end '>
-      <button className='bg-[var(--color-dark-200)] p-1.5 border-1 rounded-sm font-normal text-sm text-[var(--color-light-100)] cursor-pointer rounded-lg border-[var(--color-border-dark)] hover:border-[var(--color-blue)]' onClick={handleClearFilters}>
+      <div className="flex justify-end ">
+      <button className="bg-[var(--color-dark-200)] p-1.5 border-1 font-normal text-sm text-[var(--color-light-100)] cursor-pointer rounded-lg border-[var(--color-border-dark)] hover:border-[var(--color-blue)]" onClick={handleClearFilters}>
         Clear Filters
       </button>
         

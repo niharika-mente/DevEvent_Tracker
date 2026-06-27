@@ -70,13 +70,14 @@ export async function getAllEvents(
       queryCondition.tags = { $regex: new RegExp(`^${safeTag}$`, 'i') };
     }
 
-    const safePage = Math.max(1, isNaN(Number(page)) ? 1 : Number(page));
+    const requestedPage = Math.max(1, isNaN(Number(page)) ? 1 : Number(page));
     const safeLimit = Math.min(100, Math.max(1, isNaN(Number(limit)) ? 9 : Number(limit)));
-    const skip = (safePage - 1) * safeLimit;
 
     // Get total count for pagination metadata
     const total = await Event.countDocuments(queryCondition);
     const totalPages = Math.max(1, Math.ceil(total / safeLimit));
+    const currentPage = Math.min(requestedPage, totalPages);
+    const skip = (currentPage - 1) * safeLimit;
 
     // Popularity sort — use aggregation pipeline with $lookup on bookings
     if (filters?.sortBy === 'popularity') {
@@ -92,7 +93,7 @@ export async function getAllEvents(
         events: JSON.parse(JSON.stringify(results)),
         total,
         totalPages,
-        currentPage: safePage,
+        currentPage,
       };
     }
 
@@ -121,12 +122,17 @@ export async function getAllEvents(
       events: JSON.parse(JSON.stringify(events)),
       total,
       totalPages,
-      currentPage: safePage,
+      currentPage,
     };
 
   } catch (error) {
     console.error('Error fetching events:', error);
-    return []; 
+    return {
+      events: [],
+      total: 0,
+      totalPages: 1,
+      currentPage: 1,
+    };
   }
 }
 

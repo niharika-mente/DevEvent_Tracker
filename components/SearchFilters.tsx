@@ -2,12 +2,10 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { captureEvent } from '@/lib/posthog/helpers';
-import { POSTHOG_EVENTS } from '@/lib/posthog/events';
+
 
 const MODES = ['All', 'Online', 'Offline', 'Hybrid'];
 const POPULAR_TAGS = ['All', 'Hackathon', 'Meetup', 'Web3', 'React', 'DevOps', 'AI'];
-
 const SORT_OPTIONS = [
   { label: 'Newest First', value: '' },
   { label: 'Date (Earliest First)', value: 'date_asc' },
@@ -32,29 +30,33 @@ export default function SearchFilters() {
       params.delete(key);
     }
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
-    captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, { filter: key, value });
+    captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, {
+      filter: key,
+      value,
+    });
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const delayDebounceFn = setTimeout(() => {
       handleFilterChange('query', search);
       if (search.trim()) {
-        captureEvent(POSTHOG_EVENTS.EVENT_SEARCHED, { query: search });
+        captureEvent(POSTHOG_EVENTS.EVENT_SEARCHED, {
+          query: search,
+        });
       }
     }, 400);
-    return () => clearTimeout(timer);
+    return () => clearTimeout(delayDebounceFn);
   }, [search]);
 
-  const selectClass =
-    'px-3 py-1.5 rounded-lg border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] transition cursor-pointer';
+  const selectClass = 'px-3 py-1.5 rounded-lg border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] transition cursor-pointer';
 
   return (
     <div className="w-full max-w-6xl mx-auto my-6 px-4 space-y-4">
-      {/* Search input */}
       <div className="relative">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-light-200)] text-sm pointer-events-none">
           🔍
         </span>
+
         <input
           id="event-search-input"
           type="text"
@@ -64,12 +66,8 @@ export default function SearchFilters() {
           className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] placeholder:text-[var(--color-light-200)] focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] shadow-sm transition"
         />
       </div>
-
-      {/* Filter row */}
-      <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between pt-1">
-
-        {/* Mode filter */}
-        <div className="flex items-center gap-2 shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between pt-2">
+        <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-[var(--color-light-200)]">Mode:</span>
           <select
             id="event-mode-filter"
@@ -82,11 +80,9 @@ export default function SearchFilters() {
             ))}
           </select>
         </div>
-
-        {/* Tag pills */}
         <div className="flex items-center gap-2 overflow-x-auto max-w-full">
           <span className="text-sm font-medium text-[var(--color-light-200)] shrink-0">Tags:</span>
-          <div className="flex gap-1.5 flex-wrap">
+          <div className="flex gap-1.5">
             {POPULAR_TAGS.map((tag) => {
               const isActive = (searchParams.get('tag') || 'All') === tag;
               return (
@@ -94,19 +90,18 @@ export default function SearchFilters() {
                   key={tag}
                   id={`tag-filter-${tag.toLowerCase()}`}
                   onClick={() => handleFilterChange('tag', tag)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full border transition cursor-pointer ${
-                    isActive
-                      ? 'bg-[var(--primary)] text-black border-[var(--primary)]'
-                      : 'bg-[var(--color-dark-100)] text-[var(--color-light-100)] border-[var(--color-border-dark)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)]'
-                  }`}
+                  className={`px-3 py-1 text-xs font-medium rounded-full border transition cursor-pointer ${isActive
+                    ? 'bg-[var(--primary)] text-black border-[var(--primary)]'
+                    : 'bg-[var(--color-dark-100)] text-[var(--color-light-100)] border-[var(--color-border-dark)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)]'
+                    }`}
                 >
                   {tag}
                 </button>
               );
             })}
           </div>
-        </div>
 
+        </div>
         {/* Sort dropdown */}
         <div className="flex items-center gap-2 shrink-0">
           <label
@@ -130,5 +125,7 @@ export default function SearchFilters() {
         </div>
       </div>
     </div>
+
+
   );
 }

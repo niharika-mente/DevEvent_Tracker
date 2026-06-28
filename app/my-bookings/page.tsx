@@ -49,7 +49,7 @@ export default function MyBookingsPage() {
   // Helper utility function building custom preset links to export event configurations to Google Calendar
   const generateGoogleCalendarLink = (event: any) => {
     if (!event) return '#';
-    const baseUrl = 'https://google.com';
+    const baseUrl = 'https://calendar.google.com/calendar/render?action=TEMPLATE';
     const text = encodeURIComponent(event.title || 'Tech Event');
     
     // Convert sample date formats or default to modern ranges safely

@@ -60,6 +60,7 @@ async function connectToDatabase(): Promise<Mongoose> {
     if (!cached.promise) {
         const options = {
             bufferCommands: false, // Disable command buffering for better error handling
+            serverSelectionTimeoutMS: 5000,
         };
 
         cached.promise = mongoose.connect(MONGODB_URI!, options);

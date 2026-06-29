@@ -1,103 +1,95 @@
-'use client';
+"use client";
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { captureEvent } from '@/lib/posthog/helpers';
-import { POSTHOG_EVENTS } from '@/lib/posthog/events';
+import { Search } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { POSTHOG_EVENTS } from "@/lib/posthog/events";
+import { captureEvent } from "@/lib/posthog/helpers";
 
-const MODES = ['All', 'Online', 'Offline', 'Hybrid'];
-const POPULAR_TAGS = ['All', 'Hackathon', 'Meetup', 'Web3', 'React', 'DevOps', 'AI'];
+const MODES = ["All", "Online", "Offline", "Hybrid"];
+const POPULAR_TAGS = ["All", "Hackathon", "Meetup", "Web3", "React", "DevOps", "AI"];
 
 const SORT_OPTIONS = [
-  { label: 'Newest First', value: '' },
-  { label: 'Date (Earliest First)', value: 'date_asc' },
-  { label: 'Date (Latest First)', value: 'date_desc' },
-  { label: 'Popularity (Most Booked)', value: 'popularity' },
-  { label: 'Name (A–Z)', value: 'name_asc' },
-  { label: 'Name (Z–A)', value: 'name_desc' },
+  { label: "Newest First", value: "" },
+  { label: "Date (Earliest First)", value: "date_asc" },
+  { label: "Date (Latest First)", value: "date_desc" },
+  { label: "Popularity (Most Booked)", value: "popularity" },
+  { label: "Name (A–Z)", value: "name_asc" },
+  { label: "Name (Z–A)", value: "name_desc" },
 ];
 
 export default function SearchFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [search, setSearch] = useState(searchParams.get("query") || "");
 
-  const [search, setSearch] = useState(searchParams.get('query') || '');
-
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = useCallback((key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    if (value && value !== 'All') {
-      params.set(key, value);
-    } else {
-      params.delete(key);
-    }
-    router.push(`${pathname}?${params.toString()}`, { scroll: false });
+    if (value && value !== "All") params.set(key, value);
+    else params.delete(key);
+    if (key !== "page") params.delete("page");
+
+    const queryString = params.toString();
+    router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
     captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, { filter: key, value });
-  };
+  }, [pathname, router, searchParams]);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      handleFilterChange('query', search);
-      if (search.trim()) {
-        captureEvent(POSTHOG_EVENTS.EVENT_SEARCHED, { query: search });
-      }
+    const timer = window.setTimeout(() => {
+      if (search === (searchParams.get("query") || "")) return;
+      handleFilterChange("query", search);
+      if (search.trim()) captureEvent(POSTHOG_EVENTS.EVENT_SEARCHED, { query: search });
     }, 400);
-    return () => clearTimeout(timer);
-  }, [search]);
+    return () => window.clearTimeout(timer);
+  }, [handleFilterChange, search, searchParams]);
 
   const selectClass =
-    'px-3 py-1.5 rounded-lg border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] transition cursor-pointer';
+    "rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring";
 
   return (
-    <div className="w-full max-w-6xl mx-auto my-6 px-4 space-y-4">
-      {/* Search input */}
+    <div className="mx-auto my-6 w-full max-w-6xl space-y-4 px-4">
       <div className="relative">
-        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-light-200)] text-sm pointer-events-none">
-          🔍
-        </span>
+        <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <label htmlFor="event-search-input" className="sr-only">Search events</label>
         <input
           id="event-search-input"
-          type="text"
+          type="search"
           placeholder="Search events by title, description or tags..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 rounded-xl border border-[var(--color-border-dark)] bg-[var(--color-dark-200)] text-[var(--color-light-100)] placeholder:text-[var(--color-light-200)] focus:outline-none focus:ring-1 focus:ring-[var(--color-blue)] shadow-sm transition"
+          onChange={(event) => setSearch(event.target.value)}
+          className="w-full rounded-xl border border-border bg-card py-3 pl-10 pr-4 text-foreground shadow-sm transition placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
-      {/* Filter row */}
-      <div className="flex flex-col md:flex-row gap-4 md:items-center justify-between pt-1">
-
-        {/* Mode filter */}
-        <div className="flex items-center gap-2 shrink-0">
-          <span className="text-sm font-medium text-[var(--color-light-200)]">Mode:</span>
+      <div className="flex flex-col justify-between gap-4 pt-1 md:flex-row md:items-center">
+        <div className="flex shrink-0 items-center gap-2">
+          <label htmlFor="event-mode-filter" className="text-sm font-medium text-muted-foreground">Mode:</label>
           <select
             id="event-mode-filter"
-            value={searchParams.get('mode') || 'All'}
-            onChange={(e) => handleFilterChange('mode', e.target.value)}
+            value={searchParams.get("mode") || "All"}
+            onChange={(event) => handleFilterChange("mode", event.target.value)}
             className={selectClass}
           >
-            {MODES.map((mode) => (
-              <option key={mode} value={mode}>{mode}</option>
-            ))}
+            {MODES.map((mode) => <option key={mode} value={mode}>{mode}</option>)}
           </select>
         </div>
 
-        {/* Tag pills */}
-        <div className="flex items-center gap-2 overflow-x-auto max-w-full">
-          <span className="text-sm font-medium text-[var(--color-light-200)] shrink-0">Tags:</span>
-          <div className="flex gap-1.5 flex-wrap">
+        <div className="flex max-w-full items-center gap-2 overflow-x-auto">
+          <span className="shrink-0 text-sm font-medium text-muted-foreground">Tags:</span>
+          <div className="flex flex-wrap gap-1.5">
             {POPULAR_TAGS.map((tag) => {
-              const isActive = (searchParams.get('tag') || 'All') === tag;
+              const isActive = (searchParams.get("tag") || "All") === tag;
               return (
                 <button
+                  type="button"
                   key={tag}
-                  id={`tag-filter-${tag.toLowerCase()}`}
-                  onClick={() => handleFilterChange('tag', tag)}
-                  className={`px-3 py-1 text-xs font-medium rounded-full border transition cursor-pointer ${
+                  onClick={() => handleFilterChange("tag", tag)}
+                  aria-pressed={isActive}
+                  className={`cursor-pointer rounded-full border px-3 py-1 text-xs font-medium transition ${
                     isActive
-                      ? 'bg-[var(--primary)] text-black border-[var(--primary)]'
-                      : 'bg-[var(--color-dark-100)] text-[var(--color-light-100)] border-[var(--color-border-dark)] hover:border-[var(--color-blue)] hover:text-[var(--color-blue)]'
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border bg-card text-foreground hover:border-primary hover:text-primary"
                   }`}
                 >
                   {tag}
@@ -107,25 +99,15 @@ export default function SearchFilters() {
           </div>
         </div>
 
-        {/* Sort dropdown */}
-        <div className="flex items-center gap-2 shrink-0">
-          <label
-            htmlFor="event-sort-select"
-            className="text-sm font-medium text-[var(--color-light-200)] whitespace-nowrap"
-          >
-            Sort by:
-          </label>
+        <div className="flex shrink-0 items-center gap-2">
+          <label htmlFor="event-sort-select" className="whitespace-nowrap text-sm font-medium text-muted-foreground">Sort by:</label>
           <select
             id="event-sort-select"
-            value={searchParams.get('sortBy') || ''}
-            onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+            value={searchParams.get("sortBy") || ""}
+            onChange={(event) => handleFilterChange("sortBy", event.target.value)}
             className={`${selectClass} min-w-[185px]`}
           >
-            {SORT_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
+            {SORT_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
         </div>
       </div>

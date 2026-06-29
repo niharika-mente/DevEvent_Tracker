@@ -11,7 +11,7 @@ const CreateEventPage = () => {
       Create New Event
     </h1>
 
-    <p className="mt-4 text-gray-400 text-center">
+    <p className="mt-4 text-muted-foreground text-center">
       Submit your hackathon, meetup, or conference.
     </p>
 

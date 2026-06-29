@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
 
         try {
             event = Object.fromEntries(formData.entries());
-        } catch (e) {
+        } catch {
             return NextResponse.json({ message: 'Invalid JSON data format' }, { status: 400 })
         }
 
@@ -46,8 +46,8 @@ export async function POST(req: NextRequest) {
         const tagsStr = formData.get('tags') as string;
         const agendaStr = formData.get('agenda') as string;
 
-        let tags = safeParseJsonArray(tagsStr);
-        let agenda = safeParseJsonArray(agendaStr);
+        const tags = safeParseJsonArray(tagsStr);
+        const agenda = safeParseJsonArray(agendaStr);
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = Buffer.from(arrayBuffer);

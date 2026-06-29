@@ -6,12 +6,6 @@ import mongoose, { Mongoose } from "mongoose";
  */
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-    throw new Error(
-        "Please define the MONGODB_URI environment variable inside .env.local"
-    );
-}
-
 /**
  * Interface for the cached connection object.
  * - conn: The active Mongoose connection instance (or null if not connected).
@@ -27,7 +21,6 @@ interface MongooseCache {
  * This prevents TypeScript errors when accessing globalThis.mongoose.
  */
 declare global {
-    // eslint-disable-next-line no-var
     var mongoose: MongooseCache | undefined;
 }
 
@@ -51,6 +44,12 @@ globalThis.mongoose = cached;
  * @returns Promise<Mongoose> - The connected Mongoose instance.
  */
 async function connectToDatabase(): Promise<Mongoose> {
+    if (!MONGODB_URI) {
+        throw new Error(
+            "Please define the MONGODB_URI environment variable inside .env.local"
+        );
+    }
+
     // Return cached connection if available
     if (cached.conn) {
         return cached.conn;
@@ -62,7 +61,7 @@ async function connectToDatabase(): Promise<Mongoose> {
             bufferCommands: false, // Disable command buffering for better error handling
         };
 
-        cached.promise = mongoose.connect(MONGODB_URI!, options);
+        cached.promise = mongoose.connect(MONGODB_URI, options);
     }
 
     try {

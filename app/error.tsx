@@ -17,11 +17,11 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-black text-white px-4 text-center">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground px-4 text-center">
       <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
         Something went wrong
       </h1>
-      <p className="text-gray-400 mb-6">
+      <p className="text-muted-foreground mb-6">
         An unexpected error occurred. Please try again.
       </p>
       <div className="flex gap-4">
@@ -33,7 +33,7 @@ export default function ErrorPage({
         </button>
         <Link
           href="/"
-          className="px-6 py-3 rounded-lg border border-gray-600 hover:bg-gray-800 transition"
+          className="px-6 py-3 rounded-lg border border-border hover:bg-accent transition"
         >
           Go home
         </Link>

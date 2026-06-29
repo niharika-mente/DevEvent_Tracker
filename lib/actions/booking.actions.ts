@@ -26,8 +26,8 @@ export async function createBooking({ eventId, slug, email }: CreateBookingParam
         revalidatePath("/");
 
         return { success: true, booking: JSON.parse(JSON.stringify(booking)) };
-    } catch (error: any) {
-        if (error.code === 11000) {
+    } catch (error: unknown) {
+        if (typeof error === "object" && error !== null && "code" in error && error.code === 11000) {
             return { success: false, error: 'You have already booked this event' };
         }
         console.error('Error creating booking:', error);

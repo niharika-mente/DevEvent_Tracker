@@ -12,8 +12,8 @@ type CreateEventInput = {
   date: string;
   time: string;
   location: string;
-  mode: string;
-  type: string;
+  mode: "online" | "offline" | "hybrid";
+  type: "hackathon" | "conference" | "workshop" | "meetup";
   targetAudience: string;
   agenda: string;
   organizer: string;
@@ -60,12 +60,11 @@ export async function createEvent(data: CreateEventInput)  {
       success: true,
       event: JSON.parse(JSON.stringify(event)),
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
   console.error("Create Event Error:", error);
 
   const message =
-    error?.errors?.[0]?.message ||  // Mongoose validation error
-    error?.message ||               // General JS error
+    (error instanceof Error && error.message) ||
     "Failed to create event";       // Fallback
 
   return {

@@ -15,6 +15,16 @@ export async function createBooking({ eventId, slug, email }: CreateBookingParam
         await connectToDatabase();
         const cleanEmail = email.toLowerCase().trim();
 
+        // Check for existing booking to prevent duplicates
+        const existingBooking = await Booking.findOne({
+            eventId,
+            email: cleanEmail,
+        });
+
+        if (existingBooking) {
+            return { success: false, error: 'You have already booked this event' };
+        }
+
         // Create new booking
         const booking = await Booking.create({
             eventId,

@@ -71,7 +71,9 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
 
     // Fetch actual booking count for this event
     const bookingCountResult = await getBookingsCountByEventId(event._id);
-    const bookings = bookingCountResult.success ? bookingCountResult.count : 0;
+    const bookings = bookingCountResult.success && typeof bookingCountResult.count === "number"
+        ? bookingCountResult.count
+        : 0;
 
     const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 

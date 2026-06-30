@@ -27,8 +27,8 @@ const eventSchema = z.object({
 
   location: z.string().min(2, "Location is required"),
 
-  mode: z.string().min(1, "Select event mode"),
-  type: z.string().min(1, "Select event type"),
+  mode: z.enum(["online", "offline", "hybrid"], "Select event mode"),
+  type: z.enum(["hackathon", "conference", "workshop", "meetup"], "Select event type"),
 
   targetAudience: z
     .string()
@@ -95,8 +95,8 @@ const CreateEventForm = () => {
 };
 const inputStyles = `
   w-full p-3 rounded-xl
-  bg-black/30
-  border border-cyan-500/10
+  bg-background/80 text-foreground placeholder:text-muted-foreground
+  border border-border
   focus:outline-none
   focus:border-cyan-400/40
   focus:ring-2
@@ -105,15 +105,14 @@ const inputStyles = `
 `;
 const selectStyles = `
   ${inputStyles}
-  bg-[#071018]
-  text-white
+  bg-background
   cursor-pointer
 `;
 
 const sectionStyles = `
   rounded-2xl
   border border-cyan-500/20
-  bg-white/[0.02]
+  bg-card/70
   backdrop-blur-sm
   p-6
   space-y-6
@@ -277,13 +276,13 @@ const buttonStyles = `
                 id="mode-select"
                 {...register("mode")}
                 className={selectStyles}>
-            <option value="" className="bg-[#071018] text-gray-400">
+            <option value="">
   Select Mode
 </option>
 
-        <option value="online" className="bg-[#071018]">Online</option>
-        <option value="offline" className="bg-[#071018]">Offline</option>
-        <option value="hybrid" className="bg-[#071018]">Hybrid</option>
+        <option value="online">Online</option>
+        <option value="offline">Offline</option>
+        <option value="hybrid">Hybrid</option>
           </select>
 
           {errors.mode && (

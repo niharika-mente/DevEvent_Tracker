@@ -1,53 +1,46 @@
 "use client";
-import { useState } from "react";
+
+import { BookmarkX } from "lucide-react";
+import Link from "next/link";
+import { saveBookmarks, useBookmarks } from "@/lib/use-bookmarks";
 
 export default function WatchlistPage() {
-  const [bookmarks, setBookmarks] = useState<string[]>(() => {
-    if (typeof window === "undefined") return [];
-
-    return JSON.parse(
-      localStorage.getItem("bookmarkedEvents") || "[]"
-    );
-  });
+  const bookmarks = useBookmarks();
 
   const removeBookmark = (slug: string) => {
-    const updated = bookmarks.filter((item) => item !== slug);
-
-    setBookmarks(updated);
-
-    localStorage.setItem(
-      "bookmarkedEvents",
-      JSON.stringify(updated)
-    );
+    saveBookmarks(bookmarks.filter((item) => item !== slug));
   };
 
   return (
-    <main className="max-w-5xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">
-        My Watchlist
-      </h1>
+    <section className="mx-auto min-h-[65vh] w-full max-w-5xl py-12">
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold">My Watchlist</h1>
+        <p className="mt-2 text-muted-foreground">Events you saved for later.</p>
+      </div>
 
       {bookmarks.length === 0 ? (
-        <p>No bookmarked events yet.</p>
+        <div className="rounded-2xl border border-dashed border-border bg-card/60 p-12 text-center">
+          <BookmarkX className="mx-auto mb-4 size-9 text-muted-foreground" aria-hidden="true" />
+          <h2 className="text-lg font-semibold">No saved events yet</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Bookmark an event and it will appear here.</p>
+          <Link href="/events" className="mt-5 inline-flex rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90">
+            Explore Events
+          </Link>
+        </div>
       ) : (
-        <div className="space-y-4">
+        <ul className="space-y-4">
           {bookmarks.map((slug) => (
-            <div
-              key={slug}
-              className="border rounded-lg p-4 flex justify-between items-center"
-            >
-              <span>{slug}</span>
-
-              <button
-                onClick={() => removeBookmark(slug)}
-                className="px-3 py-1 bg-red-500 text-white rounded"
-              >
+            <li key={slug} className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-4 text-card-foreground shadow-sm">
+              <Link href={`/events/${slug}`} className="font-medium capitalize hover:text-primary hover:underline">
+                {slug.replaceAll("-", " ")}
+              </Link>
+              <button type="button" onClick={() => removeBookmark(slug)} className="rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700 transition hover:bg-red-100 dark:bg-red-950/40 dark:text-red-300 dark:hover:bg-red-950/70">
                 Remove
               </button>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
-    </main>
+    </section>
   );
 }

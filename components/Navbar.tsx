@@ -5,7 +5,7 @@ import NavLinks from "./NavLinks";
 
 const Navbar = () => {
   return (
-    <header className="sticky top-0 z-50 bg-black/90 backdrop-blur-md border-b border-gray-800">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
       <nav className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4">
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
@@ -14,7 +14,7 @@ const Navbar = () => {
             width={24}
             height={24}
           />
-          <span className="text-white font-bold text-lg">
+          <span className="text-foreground font-bold text-lg">
             DevEvent
           </span>
         </Link>

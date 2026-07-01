@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   { name: "Home", href: "/" },
@@ -30,7 +31,7 @@ export default function NavLinks() {
             className={`relative group text-sm cursor-pointer ${
               pathname === link.href
                 ? "text-cyan-400"
-                : "text-white hover:text-cyan-400"
+                : "text-foreground/80 hover:text-cyan-600 dark:hover:text-cyan-400"
             }`}
           >
             {link.name}
@@ -42,23 +43,27 @@ export default function NavLinks() {
             />
           </Link>
         ))}
+        <ThemeToggle />
       </div>
 
-      <button
-        onClick={() => setOpen(!open)}
-        className="md:hidden text-white cursor-pointer"
-        aria-label="Toggle Menu"
-        aria-expanded={open}
-        aria-controls="mobile-menu"
-      >
-        {open ? <X size={26} /> : <Menu size={26} />}
-      </button>
+      <div className="flex items-center gap-2 md:hidden">
+        <ThemeToggle />
+        <button
+          onClick={() => setOpen(!open)}
+          className="flex size-9 cursor-pointer items-center justify-center rounded-full text-foreground hover:bg-accent"
+          aria-label="Toggle navigation menu"
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+        >
+          {open ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
 
       {/* Mobile Menu */}
       {open && (
         <div
           id="mobile-menu"
-          className="absolute top-full left-0 w-full bg-black border-t border-gray-800 md:hidden"
+          className="absolute top-full left-0 w-full border-t border-border bg-background/98 shadow-lg md:hidden"
         >
           <div className="flex flex-col p-4 gap-4">
             {links.map((link) => (
@@ -68,7 +73,7 @@ export default function NavLinks() {
                 onClick={() => setOpen(false)}
                 aria-current={pathname === link.href ? "page" : undefined}
                 className={`text-sm ${
-                  pathname === link.href ? "text-cyan-400" : "text-white"
+                  pathname === link.href ? "text-cyan-600 dark:text-cyan-400" : "text-foreground"
                 }`}
               >
                 {link.name}

@@ -31,7 +31,7 @@ const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
                 captureEvent(POSTHOG_EVENTS.EVENT_BOOKED, { eventId, slug });
             } else {
                 setError(response.error || "An unexpected error occurred. Please try again.");
-                captureEvent(POSTHOG_EVENTS.BOOKING_FAILED, { eventId, slug, email });
+                captureEvent(POSTHOG_EVENTS.BOOKING_FAILED, { eventId, slug });
             }
         } catch {
             setError("A network error occurred. Please try again.");

@@ -48,9 +48,11 @@ const Page = async ({ searchParams }: PageProps) => {
             ))}
           </ul>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center p-12 border border-dashed border-gray-300 rounded-2xl max-w-xl mx-auto bg-white/50">
-            <h4 className="text-lg font-semibold text-gray-800 mb-1">No events found</h4>
-            <p className="text-sm text-gray-500 max-w-xs">
+          /* Smooth Contextual Empty State displayed dynamically */
+          <div className="flex flex-col items-center justify-center text-center p-12 border border-dashed border-border rounded-2xl max-w-xl mx-auto bg-card/60">
+            <h4 className="text-lg font-semibold text-foreground mb-1">No events found</h4>
+            {/* Fixed Linting Error: Escaped the apostrophe here */}
+            <p className="text-sm text-muted-foreground max-w-xs">
               We couldn&apos;t find any listings matching your search constraints. Try checking your spelling or adjusting filters.
             </p>
           </div>

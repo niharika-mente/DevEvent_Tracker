@@ -103,7 +103,7 @@ export default async function Page({ searchParams }: PageProps) {
       </div>
 
       {/* SearchFilters uses useSearchParams — must be inside Suspense */}
-      <Suspense fallback={<div className="w-full h-16 animate-pulse rounded-xl bg-white/5" />}>
+      <Suspense fallback={<div className="w-full h-16 animate-pulse rounded-xl bg-muted" />}>
         <SearchFilters />
       </Suspense>
 

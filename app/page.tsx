@@ -1,7 +1,8 @@
+import { Suspense } from "react";
 import ExploreBtn from "@/components/ExploreBtn";
 import EventCard from "@/components/EventCard";
-import SearchFilters from "@/components/SearchFilters"; // Added missing import
-import Footer from "@/components/Footer"; // Added missing import
+import SearchFilters from "@/components/SearchFilters";
+import Footer from "@/components/Footer";
 import { IEvent } from "@/database";
 import { getAllEvents } from "@/lib/actions/event.actions";
 
@@ -14,12 +15,9 @@ interface PageProps {
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  
-  // 1. Resolve search variables from the URL router interface
   const resolvedParams = await searchParams;
 
-  // 2. Fixed Destructuring: Receives plain array directly from your updated action
-  const events = await getAllEvents({
+  const { events } = await getAllEvents({
     query: resolvedParams.query,
     mode: resolvedParams.mode,
     tag: resolvedParams.tag,
@@ -32,15 +30,15 @@ const Page = async ({ searchParams }: PageProps) => {
 
       <ExploreBtn />
 
-      {/* 3. Insert the newly generated Search and Filter component bar */}
       <div className="mt-10">
-        <SearchFilters />
+        <Suspense fallback={<div className="w-full h-16 animate-pulse rounded-xl bg-white/5" />}>
+          <SearchFilters />
+        </Suspense>
       </div>
 
       <div className="mt-20 space-y-7">
         <h3>Featured Events</h3>
 
-        {/* 4. Display list layout conditionally or deliver clean placeholder states */}
         {events && events.length > 0 ? (
           <ul className="events">
             {events.map((event: IEvent) => (

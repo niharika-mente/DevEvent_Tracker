@@ -6,15 +6,7 @@ import RecommendedFeed from "@/components/RecommendedFeed";
 import { IEvent } from "@/database";
 import { getAllEvents, getRecommendedEvents } from "@/lib/actions/event.actions";
 
-interface PageProps {
-  searchParams: Promise<{
-    query?: string;
-    mode?: string;
-    tag?: string;
-  }>;
-}
-
-export default async function Page({ searchParams }: PageProps) {
+export default async function Page() {
   // 1. Fetch general events
   const events = await getAllEvents();
 

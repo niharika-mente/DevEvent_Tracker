@@ -12,9 +12,8 @@ type CreateEventInput = {
   date: string;
   time: string;
   location: string;
-  mode: string;
-  eventType: string;     
-  type: string;
+  mode: "online" | "offline" | "hybrid";
+  type: "hackathon" | "conference" | "workshop" | "meetup";
   targetAudience: string;
   agenda: string;
   organizer: string;
@@ -37,7 +36,6 @@ export async function createEvent(data: CreateEventInput)  {
       date: data.date,
       time: data.time,
       mode: data.mode,
-      type: data.eventType,   
       type: data.type,
 
       audience: data.targetAudience,
@@ -56,17 +54,22 @@ export async function createEvent(data: CreateEventInput)  {
     });
 
     revalidatePath("/");
+    revalidatePath("/events");
 
     return {
       success: true,
       event: JSON.parse(JSON.stringify(event)),
     };
-  } catch (error) {
+  } catch (error: unknown) {
   console.error("Create Event Error:", error);
+
+  const message =
+    (error instanceof Error && error.message) ||
+    "Failed to create event";       // Fallback
 
   return {
     success: false,
-    error: "Failed to create event",
+    error: message,
   };
 }
 }

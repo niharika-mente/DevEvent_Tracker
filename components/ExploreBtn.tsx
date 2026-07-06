@@ -1,11 +1,12 @@
 'use client';
 
 import Image from "next/image";
+import Link from "next/link";
 
 const ExploreBtn = () => {
   return (
-    <a
-      href="#events"
+    <Link
+      href="/events"
       className="
         group
         mt-7 mx-auto
@@ -28,7 +29,7 @@ const ExploreBtn = () => {
         height={20}
         className="transition-transform duration-300 group-hover:translate-y-1"
       />
-    </a>
+    </Link>
   )
 }
 

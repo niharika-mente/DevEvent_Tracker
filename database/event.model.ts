@@ -182,6 +182,25 @@ const EventSchema = new Schema<IEvent>(
 );
 
 /**
+ * Indexes for search and performance.
+ */
+EventSchema.index({ title: 'text', description: 'text', tags: 'text' });
+
+/**
+ * Cascading delete hooks to remove orphaned bookings.
+ */
+EventSchema.pre('findOneAndDelete', async function() {
+    const doc = await this.model.findOne(this.getQuery());
+    if (doc) {
+        await mongoose.models.Booking?.deleteMany({ eventId: doc._id });
+    }
+});
+
+EventSchema.pre('deleteOne', { document: true, query: false }, async function() {
+    await mongoose.models.Booking?.deleteMany({ eventId: this._id });
+});
+
+/**
  * Pre-save hook:
  * - Generates slug from title (only if title changed or is new).
  * - Normalizes date to ISO format (YYYY-MM-DD).

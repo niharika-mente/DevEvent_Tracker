@@ -76,6 +76,11 @@ BookingSchema.pre("save", async function () {
 BookingSchema.index({ eventId: 1, email: 1 }, { unique: true });
 
 /**
+ * Single-field index on email for faster query resolution without collection scans.
+ */
+BookingSchema.index({ email: 1 });
+
+/**
  * Booking Model.
  * Uses existing model if available (for hot reloading in development).
  */

@@ -13,7 +13,7 @@ const Footer = () => {
               DevEvent
             </h2>
 
-            <p className="mt-3 text-gray-400 text-sm leading-6">
+            <p className="mt-3 text-muted-foreground text-sm leading-6">
               The hub for developers to discover hackathons,
               meetups, conferences, and opportunities worldwide.
             </p>
@@ -23,7 +23,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
 
-            <ul className="space-y-3 text-gray-400 list-none">
+            <ul className="space-y-3 text-muted-foreground list-none">
               <li>
                 <Link href="/" className="hover:text-cyan-400 transition duration-300">
                   Home
@@ -41,6 +41,12 @@ const Footer = () => {
                   Create Event
                 </Link>
               </li>
+
+              <li>
+                <Link href="/my-bookings" className="hover:text-cyan-400 transition duration-300">
+                  My Bookings
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -48,7 +54,7 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
 
-            <ul className="space-y-3 text-gray-400 list-none">
+            <ul className="space-y-3 text-muted-foreground list-none">
               <li>
                 <a
                   href="https://github.com/niharika-mente"
@@ -76,7 +82,7 @@ const Footer = () => {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-10 border-t border-cyan-500/10 pt-5 text-center text-gray-500 text-sm">
+        <div className="mt-10 border-t border-cyan-500/10 pt-5 text-center text-muted-foreground text-sm">
           <p>Connecting developers with opportunities.</p>
 
           <p className="mt-2">

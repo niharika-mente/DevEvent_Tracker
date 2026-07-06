@@ -1,79 +1,141 @@
+"use server";
+
+import type { QueryFilter, SortOrder } from "mongoose";
+import { type IEvent } from "@/database";
+import Event from "@/database/event.model";
 import connectToDatabase from "@/lib/mongodb";
-import { Event } from "@/database";
 
-const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
+type SortBy = "date_asc" | "date_desc" | "name_asc" | "name_desc" | "popularity";
 
-export async function getAllEvents(filters?: { query?: string; mode?: string; tag?: string }) {
-  try {
-    await connectToDatabase();
-    const queryCondition: any = {};
+interface EventFilters {
+  query?: string;
+  mode?: string;
+  tag?: string;
+  sortBy?: SortBy;
+}
 
-    if (filters?.query) {
-      const safeQuery = escapeRegex(filters.query);
-      queryCondition.$or = [
-        { title: { $regex: safeQuery, $options: 'i' } },
-        { description: { $regex: safeQuery, $options: 'i' } },
-        { tags: { $regex: safeQuery, $options: 'i' } }
-      ];
-    }
+interface PaginatedEvents {
+  events: IEvent[];
+  total: number;
+  totalPages: number;
+  currentPage: number;
+}
 
-    if (filters?.mode && filters.mode !== 'All') {
-      const safeMode = escapeRegex(filters.mode);
-      queryCondition.mode = { $regex: new RegExp(`^${safeMode}$`, 'i') };
-    }
+const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 
-    if (filters?.tag && filters.tag !== 'All') {
-      const safeTag = escapeRegex(filters.tag);
-      queryCondition.tags = { $regex: new RegExp(`^${safeTag}$`, 'i') };
-    }
+function buildFilter(filters?: EventFilters): QueryFilter<IEvent> {
+  const queryCondition: QueryFilter<IEvent> = {};
 
-    const events = await Event.find(queryCondition).sort({ createdAt: -1 });
-    return JSON.parse(JSON.stringify(events));
+  if (filters?.query) {
+    const safeQuery = escapeRegex(filters.query);
+    queryCondition.$or = [
+      { title: { $regex: safeQuery, $options: "i" } },
+      { description: { $regex: safeQuery, $options: "i" } },
+      { tags: { $regex: safeQuery, $options: "i" } },
+    ];
+  }
 
-  } catch (error) {
-    console.error('Error fetching events:', error);
-    return []; 
+  if (filters?.mode && filters.mode !== "All") {
+    queryCondition.mode = { $regex: new RegExp(`^${escapeRegex(filters.mode)}$`, "i") };
+  }
+
+  if (filters?.tag && filters.tag !== "All") {
+    queryCondition.tags = { $regex: new RegExp(`^${escapeRegex(filters.tag)}$`, "i") };
+  }
+
+  return queryCondition;
+}
+
+function getSort(sortBy?: SortBy): Record<string, SortOrder> {
+  switch (sortBy) {
+    case "date_asc": return { date: 1 };
+    case "date_desc": return { date: -1 };
+    case "name_asc": return { title: 1 };
+    case "name_desc": return { title: -1 };
+    default: return { createdAt: -1 };
   }
 }
 
-export async function getSimilarEventsBySlug(
-  slug: string,
-  tags: string[] = []
-) {
-  await connectToDatabase();
+export async function getAllEvents(filters?: EventFilters): Promise<IEvent[]>;
+export async function getAllEvents(filters: EventFilters | undefined, page: number, limit: number): Promise<PaginatedEvents>;
+export async function getAllEvents(
+  filters?: EventFilters,
+  page?: number,
+  limit?: number,
+): Promise<IEvent[] | PaginatedEvents> {
+  try {
+    await connectToDatabase();
+    const queryCondition = buildFilter(filters);
 
-  if (!tags.length) {
+    if (page === undefined || limit === undefined) {
+      const events = await Event.find(queryCondition).sort(getSort(filters?.sortBy)).lean();
+      return JSON.parse(JSON.stringify(events)) as IEvent[];
+    }
+
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.min(100, Math.max(1, limit));
+    const skip = (safePage - 1) * safeLimit;
+    const total = await Event.countDocuments(queryCondition);
+
+    if (filters?.sortBy === "popularity") {
+      const events = await Event.aggregate<IEvent>([
+        { $match: queryCondition },
+        { $lookup: { from: "bookings", localField: "_id", foreignField: "eventId", as: "bookings" } },
+        { $addFields: { bookingCount: { $size: "$bookings" } } },
+        { $sort: { bookingCount: -1, createdAt: -1 } },
+        { $project: { bookings: 0, bookingCount: 0 } },
+        { $skip: skip },
+        { $limit: safeLimit },
+      ]);
+      return {
+        events: JSON.parse(JSON.stringify(events)) as IEvent[],
+        total,
+        totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+        currentPage: safePage,
+      };
+    }
+
+    const events = await Event.find(queryCondition)
+      .sort(getSort(filters?.sortBy))
+      .skip(skip)
+      .limit(safeLimit)
+      .lean();
+
+    return {
+      events: JSON.parse(JSON.stringify(events)) as IEvent[],
+      total,
+      totalPages: Math.max(1, Math.ceil(total / safeLimit)),
+      currentPage: safePage,
+    };
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    if (page !== undefined && limit !== undefined) {
+      return { events: [], total: 0, totalPages: 1, currentPage: Math.max(1, page) };
+    }
     return [];
   }
-
-  const events = await Event.find({
-    slug: { $ne: slug },
-    tags: { $in: tags }
-  }).limit(3);
-
-  return JSON.parse(JSON.stringify(events));
 }
 
-// Add this at the very bottom of your lib/actions/event.action.ts file
-
-export async function getRecommendedEvents(userTags: string[] = []) {
+export async function getSimilarEventsBySlug(slug: string): Promise<IEvent[]> {
   try {
     await connectToDatabase();
+    const currentEvent = await Event.findOne({ slug }).select("_id type tags").lean();
+    if (!currentEvent) return [];
 
-    if (!userTags.length) {
-      return [];
-    }
-
-    // Find up to 3 events that match the user's interested tags, sorted by newest
-    const recommendedEvents = await Event.find({
-      tags: { $in: userTags }
+    const similarEvents = await Event.find({
+      _id: { $ne: currentEvent._id },
+      $or: [
+        { type: currentEvent.type },
+        { tags: { $in: currentEvent.tags } },
+      ],
     })
-    .sort({ createdAt: -1 })
-    .limit(3);
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .lean();
 
-    return JSON.parse(JSON.stringify(recommendedEvents));
+    return JSON.parse(JSON.stringify(similarEvents)) as IEvent[];
   } catch (error) {
-    console.error('Error fetching recommended events:', error);
+    console.error("Error fetching similar events:", error);
     return [];
   }
 }

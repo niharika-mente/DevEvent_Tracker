@@ -6,16 +6,9 @@ import Footer from "@/components/Footer";
 import { IEvent } from "@/database";
 import { getAllEvents } from "@/lib/actions/event.actions";
 
-interface PageProps {
-  searchParams: Promise<{
-    query?: string;
-    mode?: string;
-    tag?: string;
-  }>;
-}
-
-const Page = async ({ searchParams }: PageProps) => {
-  const resolvedParams = await searchParams;
+export default async function Page() {
+  // 1. Fetch general events
+  const events = await getAllEvents();
 
   const { events } = await getAllEvents({
     query: resolvedParams.query,

@@ -5,14 +5,14 @@ import { Booking, Event } from "@/database";
 import { revalidatePath } from "next/cache";
 
 interface RouteParams {
-    params: Promise<{ id: string }>;
+    params: Promise<{ slug: string }>;
 }
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest, { params }: RouteParams) {
     try {
-        const { id: eventId } = await params;
+        const { slug: eventId } = await params;
 
         // 1. Validate event ID
         if (!eventId || !Types.ObjectId.isValid(eventId)) {

@@ -115,7 +115,7 @@
   }
 
   body {
-    @apply min-h-screen bg-background text-foreground antialiased transition-colors duration-300;
+    @apply relative min-h-screen bg-background text-foreground antialiased transition-colors duration-300;
     font-family: var(--font-sans-brand);
     background-image: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--primary) 8%, transparent), transparent 34rem);
   }

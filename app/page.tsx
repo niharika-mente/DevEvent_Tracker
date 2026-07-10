@@ -10,11 +10,7 @@ export default async function Page() {
   // 1. Fetch general events
   const events = await getAllEvents();
 
-  const { events } = await getAllEvents({
-    query: resolvedParams.query,
-    mode: resolvedParams.mode,
-    tag: resolvedParams.tag,
-  });
+  
 
   return (
     <section>
@@ -55,5 +51,3 @@ export default async function Page() {
     </section>
   )
 }
-
-export default Page;

@@ -19,6 +19,7 @@ export async function createBooking({ eventId, slug, email }: CreateBookingParam
     const existingBooking = await Booking.findOne({
       eventId,
       email: cleanEmail,
+      status: "confirmed",
     });
 
     if (existingBooking) {
@@ -29,6 +30,9 @@ export async function createBooking({ eventId, slug, email }: CreateBookingParam
     const booking = await Booking.create({
       eventId,
       email: cleanEmail,
+      seats: 1,
+      status: "confirmed",
+      lockExpiresAt: null,
     });
 
     // Revalidate caches after booking
@@ -54,8 +58,8 @@ export async function getBookingsByEventId(eventId: string, page = 1, limit = 50
     const skip = (safePage - 1) * safeLimit;
 
     const [bookings, total] = await Promise.all([
-      Booking.find({ eventId }).skip(skip).limit(safeLimit),
-      Booking.countDocuments({ eventId })
+      Booking.find({ eventId, status: "confirmed" }).skip(skip).limit(safeLimit),
+      Booking.countDocuments({ eventId, status: "confirmed" })
     ]);
 
     const totalPages = Math.ceil(total / safeLimit);
@@ -78,7 +82,10 @@ export async function getBookingsCountByEventId(eventId: string) {
   try {
     await connectToDatabase();
 
-    const count = await Booking.countDocuments({ eventId });
+    const count = await Booking.countDocuments({
+      eventId,
+      status: "confirmed",
+    });
 
     return { success: true, count };
   } catch (error) {
@@ -100,7 +107,7 @@ export async function getBookingsByEmail(email: string, page = 1, limit = 50) {
     const skip = (safePage - 1) * safeLimit;
 
     // Fetch user bookings and populate referenced Event model properties
-    const bookings = await Booking.find({ email: cleanEmail })
+    const bookings = await Booking.find({ email: cleanEmail, status: "confirmed" })
       .populate('eventId')
       .sort({ createdAt: -1 })
       .skip(skip)

@@ -2,8 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Types } from "mongoose";
 import mongoose from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
-import Booking from "@/database/models/Booking";
-import Event from "@/database/models/Event";
+import Booking from "@/database/booking.model";
+import Event from "@/database/event.model";
 
 interface RouteParams {
     params: Promise<{ slug: string }>;

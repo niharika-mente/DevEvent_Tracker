@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import mongoose, { Types } from "mongoose";
 import connectToDatabase from "@/lib/mongodb";
-import Booking from "@/database/models/Booking";
-import Event from "@/database/models/Event";
+import Booking from "@/database/booking.model";
+import Event from "@/database/event.model";
 import { revalidatePath } from "next/cache";
 
 interface RouteParams {
@@ -119,6 +119,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
         await dbSession.withTransaction(async () => {
             // 6) Ensure event exists
             const event = await Event.findById(eventId).session(dbSession);
+            const eventSlug = String((event as any).slug || "");
             if (!event) {
                 responseBody = { message: "Event not found." };
                 responseStatus = 404;
@@ -282,7 +283,7 @@ export async function POST(req: NextRequest, { params }: RouteParams) {
             }
         });
 
-        revalidatePath(`/events/${eventId}`);
+        if (eventSlug) revalidatePath(`/events/${eventSlug}`);
         revalidatePath("/");
 
         return NextResponse.json(responseBody, { status: responseStatus });

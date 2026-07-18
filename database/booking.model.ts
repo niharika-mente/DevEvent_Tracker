@@ -6,6 +6,9 @@ import mongoose, { Model, Schema, Types, HydratedDocument } from "mongoose";
 export interface IBooking {
     eventId: Types.ObjectId;
     email: string;
+    seats: number;
+    status: "locked" | "confirmed" | "cancelled" | "expired";
+    lockExpiresAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -42,6 +45,24 @@ const BookingSchema = new Schema<IBooking>(
                 message: "Please provide a valid email address",
             },
         },
+        seats: {
+            type: Number,
+            required: [true, "Seats is required"],
+            min: [1, "At least one seat must be booked"],
+            default: 1,
+        },
+        status: {
+            type: String,
+            enum: ["locked", "confirmed", "cancelled", "expired"],
+            required: true,
+            default: "locked",
+            index: true,
+        },
+        lockExpiresAt: {
+            type: Date,
+            default: null,
+            index: true,
+        },
     },
     {
         timestamps: true, // Automatically adds createdAt and updatedAt
@@ -73,12 +94,20 @@ BookingSchema.pre("save", async function () {
 /**
  * Compound index to prevent duplicate bookings for the same event and email.
  */
-BookingSchema.index({ eventId: 1, email: 1 }, { unique: true });
+BookingSchema.index(
+    { eventId: 1, email: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { status: "confirmed" },
+    }
+);
 
 /**
  * Single-field index on email for faster query resolution without collection scans.
  */
 BookingSchema.index({ email: 1 });
+BookingSchema.index({ eventId: 1, status: 1 });
+BookingSchema.index({ eventId: 1, lockExpiresAt: 1 });
 
 /**
  * Booking Model.

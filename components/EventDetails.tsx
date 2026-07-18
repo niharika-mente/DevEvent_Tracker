@@ -126,7 +126,7 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
                             <p className="text-sm">Be the first to book your spot!</p>
                         )}
 
-                        <BookEvent eventId={event._id} slug={event.slug} />
+                        <BookEvent eventId={String(event._id)} slug={event.slug} />
                     </div>
                 </aside>
             </div>

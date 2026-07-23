@@ -62,28 +62,34 @@ export default function NavLinks() {
 
         {/* Mobile Menu */}
         {open && (
-          <div
-            id="mobile-menu"
-            className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-1rem,18rem)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-border bg-background/95 p-2 shadow-xl backdrop-blur-md"
-          >
-            <div className="flex flex-col gap-1">
-              {links.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  aria-current={pathname === link.href ? "page" : undefined}
-                  className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium whitespace-normal break-words transition-colors duration-200 ${
-                    pathname === link.href
-                      ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400"
-                      : "text-foreground hover:bg-accent hover:text-cyan-600 dark:hover:text-cyan-400"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
+          <>
+            <div
+              className="fixed inset-0 z-[80] bg-black/10 backdrop-blur-[1px] md:hidden"
+              onClick={() => setOpen(false)}
+            />
+            <div
+              id="mobile-menu"
+              className="fixed right-3 top-16 z-[90] w-[min(100%,18rem)] rounded-xl border border-border bg-background/95 p-2 shadow-xl backdrop-blur-md md:hidden"
+            >
+              <div className="flex flex-col gap-1">
+                {links.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    aria-current={pathname === link.href ? "page" : undefined}
+                    className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium whitespace-normal break-words transition-colors duration-200 ${
+                      pathname === link.href
+                        ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400"
+                        : "text-foreground hover:bg-accent hover:text-cyan-600 dark:hover:text-cyan-400"
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </>

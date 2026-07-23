@@ -47,10 +47,12 @@ export default function NavLinks() {
       </div>
 
       <div className="relative flex items-center gap-2 md:hidden">
-        <ThemeToggle />
+        <div className="shrink-0">
+          <ThemeToggle />
+        </div>
         <button
           onClick={() => setOpen(!open)}
-          className="flex size-9 cursor-pointer items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent"
+          className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-foreground transition-colors hover:bg-accent"
           aria-label="Toggle navigation menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
@@ -62,7 +64,7 @@ export default function NavLinks() {
         {open && (
           <div
             id="mobile-menu"
-            className="absolute right-0 top-full mt-2 w-[min(100vw-1rem,18rem)] rounded-xl border border-border bg-background/95 p-2 shadow-xl backdrop-blur-md"
+            className="absolute right-0 top-full z-50 mt-2 w-[min(100vw-1rem,18rem)] max-w-[calc(100vw-1rem)] overflow-hidden rounded-xl border border-border bg-background/95 p-2 shadow-xl backdrop-blur-md"
           >
             <div className="flex flex-col gap-1">
               {links.map((link) => (
@@ -71,7 +73,7 @@ export default function NavLinks() {
                   href={link.href}
                   onClick={() => setOpen(false)}
                   aria-current={pathname === link.href ? "page" : undefined}
-                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+                  className={`w-full rounded-lg px-3 py-2 text-left text-sm font-medium whitespace-normal break-words transition-colors duration-200 ${
                     pathname === link.href
                       ? "bg-cyan-50 text-cyan-600 dark:bg-cyan-950/40 dark:text-cyan-400"
                       : "text-foreground hover:bg-accent hover:text-cyan-600 dark:hover:text-cyan-400"

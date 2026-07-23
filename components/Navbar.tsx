@@ -6,7 +6,7 @@ import NavLinks from "./NavLinks";
 const Navbar = () => {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-md">
-      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2 overflow-x-hidden px-3 py-3 sm:px-4 sm:py-4">
+      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between gap-2 px-3 py-3 sm:px-4 sm:py-4">
         <Link
           href="/"
           className="flex min-w-0 max-w-full shrink items-center gap-2"

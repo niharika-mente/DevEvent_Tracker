@@ -10,8 +10,8 @@ const MODES = ["All", "Online", "Offline", "Hybrid"];
 const POPULAR_TAGS = ["All", "Hackathon", "Meetup", "Web3", "React", "DevOps", "AI"];
 
 const SORT_OPTIONS = [
-  { label: "Date (Latest First)", value: "" },
-  { label: "Date (Earliest First)", value: "date_asc" },
+  { label: "Date (Newest First)", value: "" },
+  { label: "Date (Oldest First)", value: "date_asc" },
   { label: "Popularity (Most Booked)", value: "popularity" },
   { label: "Name (A–Z)", value: "name_asc" },
   { label: "Name (Z–A)", value: "name_desc" },

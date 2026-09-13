@@ -52,7 +52,7 @@ export default function SearchFilters() {
   const activeMode = searchParams.get("mode") || "All";
   const activeTag = searchParams.get("tag") || "All";
   const activeSort = searchParams.get("sortBy") || "";
-  const hasActiveFilters = Boolean(search || (activeMode !== "All") || (activeTag !== "All") || activeSort);
+  const hasActiveFilters = Boolean(search.trim() || activeMode !== "All" || activeTag !== "All" || activeSort);
 
   const selectClass =
     "rounded-lg border border-border bg-card px-3 py-1.5 text-sm text-foreground transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-ring";
@@ -76,6 +76,7 @@ export default function SearchFilters() {
         {hasActiveFilters && (
           <button
             type="button"
+            id="clear-filters-btn"
             onClick={handleClearFilters}
             className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-card px-4 py-3 text-xs font-semibold text-muted-foreground hover:bg-accent hover:text-foreground transition cursor-pointer shadow-sm"
             aria-label="Clear all filters"

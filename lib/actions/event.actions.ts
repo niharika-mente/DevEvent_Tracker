@@ -26,8 +26,9 @@ const escapeRegex = (text: string) => text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "
 function buildFilter(filters?: EventFilters): QueryFilter<IEvent> {
   const queryCondition: QueryFilter<IEvent> = {};
 
-  if (filters?.query) {
-    const safeQuery = escapeRegex(filters.query);
+  const trimmedQuery = filters?.query?.trim();
+  if (trimmedQuery) {
+    const safeQuery = escapeRegex(trimmedQuery);
     queryCondition.$or = [
       { title: { $regex: safeQuery, $options: "i" } },
       { description: { $regex: safeQuery, $options: "i" } },

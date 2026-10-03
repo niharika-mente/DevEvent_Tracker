@@ -24,14 +24,15 @@ export default function SearchFilters() {
   const [search, setSearch] = useState(searchParams.get("query") || "");
 
   const handleFilterChange = useCallback((key: string, value: string) => {
+    const trimmedValue = value.trim();
     const params = new URLSearchParams(searchParams.toString());
-    if (value && value !== "All") params.set(key, value);
+    if (trimmedValue && trimmedValue !== "All") params.set(key, trimmedValue);
     else params.delete(key);
     if (key !== "page") params.delete("page");
 
     const queryString = params.toString();
     router.push(queryString ? `${pathname}?${queryString}` : pathname, { scroll: false });
-    captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, { filter: key, value });
+    captureEvent(POSTHOG_EVENTS.EVENT_FILTER_CHANGED, { filter: key, value: trimmedValue });
   }, [pathname, router, searchParams]);
 
   const handleClearFilters = useCallback(() => {

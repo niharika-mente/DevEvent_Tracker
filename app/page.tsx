@@ -20,7 +20,7 @@ export default async function Page({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
 
   const events = await getAllEvents({
-    query: resolvedParams.query?.trim() || undefined, // ✅ CodeRabbit fix
+    query: resolvedParams.query?.trim() || undefined,
     mode: resolvedParams.mode,
     tag: resolvedParams.tag,
     sortBy: resolvedParams.sortBy,
@@ -70,7 +70,6 @@ export default async function Page({ searchParams }: PageProps) {
           </div>
         )}
       </div>
-
       <Footer />
     </section>
   );
